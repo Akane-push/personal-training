@@ -1,0 +1,241 @@
+Country_Code,Country_Name,Geographical_Zone_Code,Geographical_Zone_Name
+AD,Andorra,150,Europe
+AE,United Arab Emirates,145,Western Asia
+AF,Afghanistan,145,Western Asia
+AG,"Antigua And Barbuda, Leeward Islands",,
+AI,"Anguilla, Leeward Islands",,
+AL,Albania,150,Europe
+AM,Armenia,145,Western Asia
+AO,Angola,,
+AQ,Antarctica,,
+AR,Argentina,005,South America
+AS,American Samoa,,
+AT,Austria,150,Europe
+AU,Australia,009,Oceania
+AW,Aruba,,
+AZ,Azerbaijan,145,Western Asia
+BA,Bosnia And Herzegovina,150,Europe
+BB,Barbados,,
+BD,Bangladesh,,
+BE,Belgium,150,Europe
+BF,Burkina Faso,,
+BG,Bulgaria,150,Europe
+BH,Bahrain,145,Western Asia
+BI,Burundi,,
+BJ,Benin,,
+BL,Saint Barthelemy,,
+BM,Bermuda,021,Northern America
+BN,Brunei Darussalam,,
+BO,Bolivia,005,South America
+BQ,"Bonaire, Saint Eustatius And Saba",,
+BR,Brazil,005,South America
+BS,Bahamas,,
+BT,Bhutan,,
+BW,Botswana,018,Southern Africa
+BY,Belarus,150,Europe
+BZ,Belize,,
+CA,Canada,021,Northern America
+CC,Cocos (Keeling) Islands,,
+CD,Congo Democratic Republic Of,,
+CF,Central African Republic,,
+CG,Congo,,
+CH,Switzerland,150,Europe
+CI,Cote D'ivoire,,
+CK,Cook Islands,,
+CL,Chile,005,South America
+CM,Cameroon,,
+CN,China,030,Eastern Asia
+CO,Colombia,005,South America
+CR,Costa Rica,,
+CU,Cuba,,
+CV,Cape Verde,,
+CW,Curacao,,
+CX,"Christmas Island, Indian Ocean",,
+CY,Cyprus,150,Europe
+CZ,Czech Republic,150,Europe
+DE,Germany,150,Europe
+DJ,Djibouti,,
+DK,Denmark,150,Europe
+DM,Dominica,,
+DO,Dominican Republic,,
+DZ,Algeria,015,Northern Africa
+EC,Ecuador,005,South America
+EE,Estonia,150,Europe
+EG,Egypt,015,Northern Africa
+ER,Eritrea,,
+ES,Spain,150,Europe
+ET,Ethiopia,,
+FI,Finland,150,Europe
+FJ,Fiji,009,Oceania
+FK,Falkland Islands,,
+FM,Micronesia Federated States Of,,
+FO,Faroe Islands,,
+FR,France,150,Europe
+GA,Gabon,,
+GB,United Kingdom,150,Europe
+GD,"Grenada, Windward Islands",,
+GE,Georgia,145,Western Asia
+GF,French Guiana,,
+GH,Ghana,,
+GI,Gibraltar,,
+GL,Greenland,021,Northern America
+GM,Gambia,,
+GN,Guinea,,
+GP,Guadeloupe,,
+GQ,Equatorial Guinea,,
+GR,Greece,150,Europe
+GT,Guatemala,,
+GU,Guam,,
+GW,Guinea-Bissau,,
+GY,Guyana,005,South America
+HK,Hong Kong,030,Eastern Asia
+HN,Honduras,,
+HR,Croatia,150,Europe
+HT,Haiti,,
+HU,Hungary,150,Europe
+ID,Indonesia,,
+IE,Ireland Republic Of,150,Europe
+IL,Israel,145,Western Asia
+IN,India,,
+IQ,Iraq,145,Western Asia
+IR,Iran Islamic Republic Of,145,Western Asia
+IR,Iran Islamic Republic Of,145,Western Asia
+IS,Iceland,150,Europe
+IT,Italy,150,Europe
+JM,Jamaica,,
+JO,Jordan,145,Western Asia
+JP,Japan,030,Eastern Asia
+KE,Kenya,,
+KG,Kyrgyzstan,,
+KH,Cambodia,,
+KI,Kiribati,,
+KM,Comoros,,
+KN,"Saint Kitts And Nevis, Leeward Island",,
+KP,Korea Democratic People's Republic Of,030,Eastern Asia
+KR,Korea Republic Of,030,Eastern Asia
+KW,Kuwait,145,Western Asia
+KY,Cayman Islands,,
+KZ,Kazakhstan,,
+LA,Lao People's Democratic Republic,,
+LB,Lebanon,145,Western Asia
+LC,Saint Lucia,,
+LI,Liechtenstein,150,Europe
+LK,Sri Lanka,,
+LR,Liberia,,
+LS,Lesotho,018,Southern Africa
+LT,Lithuania,150,Europe
+LU,Luxembourg,150,Europe
+LV,Latvia,150,Europe
+LY,Libya,015,Northern Africa
+MA,Morocco,015,Northern Africa
+MC,Monaco,150,Europe
+MD,Moldova Republic Of,150,Europe
+ME,Montenegro,150,Europe
+MF,Saint Martin,,
+MG,Madagascar,,
+MH,Marshall Islands,,
+MK,North Macedonia ,150,Europe
+ML,Mali,,
+MM,Myanmar,,
+MN,Mongolia,030,Eastern Asia
+MO,Macau,030,Eastern Asia
+MP,Northern Mariana Islands,,
+MQ,Martinique,,
+MR,Mauritania,,
+MS,"Montserrat, Leeward Islands",,
+MT,Malta,150,Europe
+MU,Mauritius,,
+MV,Maldives,,
+MW,Malawi,,
+MX,Mexico,,
+MY,Malaysia,,
+MZ,Mozambique,,
+,Namibia,,
+NC,New Caledonia,,
+NE,Niger,,
+NF,Norfolk Island,,
+NG,Nigeria,,
+NI,Nicaragua,,
+NL,Netherlands,150,Europe
+NO,Norway,150,Europe
+NP,Nepal,,
+NR,Nauru,,
+NU,Niue,,
+NZ,New Zealand,009,Oceania
+OM,Oman,145,Western Asia
+PA,Panama,,
+PE,Peru,005,South America
+PF,French Polynesia,,
+PG,Papua New Guinea,009,Oceania
+PH,Philippines,,
+PK,Pakistan,,
+PL,Poland,150,Europe
+PM,Saint Pierre And Miquelon,,
+PN,Pitcairn Islands,,
+PR,Puerto Rico,,
+PS,Palestine,145,Western Asia
+PT,Portugal,150,Europe
+PW,Palau,,
+PY,Paraguay,005,South America
+QA,Qatar,145,Western Asia
+RE,Reunion,,
+RO,Romania,150,Europe
+RS,Serbia,150,Europe
+RU,Russian Federation,,
+RW,Rwanda,,
+SA,Saudi Arabia,145,Western Asia
+SB,Solomon Islands,009,Oceania
+SC,Seychelles,,
+SD,Sudan,015,Northern Africa
+SE,Sweden,150,Europe
+SG,Singapore,,
+SH,Saint Helena,,
+SI,Slovenia,150,Europe
+SK,Slovakia,150,Europe
+SL,Sierra Leone,,
+SM,San Marino,150,Europe
+SN,Senegal,,
+SO,Somalia,,
+SR,Suriname,005,South America
+SS,South Sudan,,
+ST,Sao Tome And Principe,,
+SV,El Salvador,,
+SX,St Maarten (Dutch Part),,
+SY,Syrian Arab Republic,145,Western Asia
+SZ,Eswatini,018,Southern Africa
+TC,Turks And Caicos Islands,,
+TD,Chad,,
+TG,Togo,,
+TH,Thailand,,
+TJ,Tajikistan,,
+TL,Timor-Leste,,
+TM,Turkmenistan,,
+TN,Tunisia,015,Northern Africa
+TO,Tonga,,
+TR,Turkiye,145,Western Asia
+TT,Trinidad And Tobago,,
+TV,Tuvalu,,
+TW,Chinese Taipei,030,Eastern Asia
+TZ,Tanzania United Republic Of,,
+UA,Ukraine,150,Europe
+UG,Uganda,,
+UM,United States Minor Outlying Islands,,
+US,United States Of America,021,Northern America
+UY,Uruguay,005,South America
+UZ,Uzbekistan,,
+VA,Vatican City State,150,Europe
+VC,St Vincent And The Grenadines,,
+VE,Venezuela,005,South America
+VG,"Virgin Islands, British",,
+VI,"Virgin Islands, Us",,
+VN,Viet Nam,,
+VU,Vanuatu,009,Oceania
+WF,Wallis And Futuna Islands,,
+WS,Samoa,,
+XK,Kosovo Republic Of,,
+XX,Dummy Country,,
+YE,Yemen,145,Western Asia
+YT,Mayotte,,
+ZA,South Africa,018,Southern Africa
+ZM,Zambia,,
+ZW,Zimbabwe,,
