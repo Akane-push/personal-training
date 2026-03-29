@@ -64,7 +64,7 @@ class LufthansaRefs:
 
     # Get all datas and merge them in a csv file
     def get_datas(self):
-        name_csv = "airports_references.parquet"
+        name_parquet = "airports_references.parquet"
         airports_df = self.get_airports()
         time.sleep(5)
         countries_df = self.get_countries()
@@ -72,8 +72,8 @@ class LufthansaRefs:
         refs_df = refs_df.reset_index()
         refs_df = refs_df[['Airport_IATA', 'Airport_Name', 'Country_Code', 'Country_Name', 'Latitude', 'Longitude']]
         refs_df.set_index('Airport_IATA', inplace=True)
-        refs_df.to_parquet(name_csv, engine="pyarrow",  index=True)
-        print(f"[INFO] The references are available in the: {name_csv} file !")       
+        refs_df.to_parquet(name_parquet, engine="pyarrow",  index=True)
+        print(f"[INFO] The references are available in the: {name_parquet} file !")       
 
 
 
