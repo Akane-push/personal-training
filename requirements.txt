@@ -2,3 +2,4 @@ dotenv
 requests
 pandas
 pyarrow
+datetime
