@@ -53,7 +53,7 @@ class LufthansaFly:
                     'Arr_Actual_Time': [time["Arrival"]["Actual"]["Time"] for time in filtered_json],
                     'Aircraft_Code': [code['Equipment']['AircraftCode'] for code in filtered_json]
                                     })
-            print(df_list)
+            #print(df_list)
             df_flight_list = pd.concat([df_flight_list, df_list], axis = 0)
             time.sleep(6)
         return df_flight_list
@@ -65,8 +65,15 @@ class LufthansaFly:
         name_data_file = f"{date.split('T')[0]}_flydatas.parquet"
         file_path = os.path.join(datas_path, name_data_file)
 
-        df_flight_list.to_parquet(file_path, engine="pyarrow",  index=False)
-        print(f"[INFO] Datas are available in the: {file_path} file !")
+        if os.path.exists(file_path):
+            df_existant = pd.read_parquet(file_path)
+            df_final = pd.concat([df_existant, df_flight_list], ignore_index=True)
+            df_final.to_parquet(file_path, index=False)
+            print(f"[INFO] Datas are added in the: {file_path} file !")
+
+        else:
+            df_flight_list.to_parquet(file_path, engine="pyarrow",  index=False)
+            print(f"[INFO] Datas are available in the: {file_path} file !")
 
     #Existing file verification
     #def save_datas(self):
@@ -74,4 +81,4 @@ class LufthansaFly:
 
 
 if __name__ == "__main__":
-    LufthansaFly().get_datas("2026-03-28T14:00")
+    LufthansaFly().get_datas("2026-03-27T14:00")
