@@ -3,3 +3,6 @@ requests
 pandas
 pyarrow
 datetime
+openmeteo-requests
+requests-cache
+retry-requests

@@ -1,6 +1,5 @@
 import sys
 import os
-from datetime import datetime
 import time
 import requests
 import pandas as pd
@@ -14,13 +13,12 @@ airports_json = os.path.join(current_folder, "..", "reference_data", "study_airp
 with open(airports_json, 'r', encoding='utf-8') as f:
     airports_list = json.load(f)
 
-datas_path = os.getenv("Datas_path")
 limit_call_per_hour = 1000
 
 
 class LufthansaFly:
+    #Identification
     def __init__(self):
-        #Identification
         self.api = LufthansaAPI()
         if self.api.token is None:
             self.token = self.api.get_token()
@@ -58,27 +56,5 @@ class LufthansaFly:
             time.sleep(6)
         return df_flight_list
 
-    #Generate the files
-    def get_datas(self, date: str):
-        df_flight_list = self.get_flights(date)
-
-        name_data_file = f"{date.split('T')[0]}_flydatas.parquet"
-        file_path = os.path.join(datas_path, name_data_file)
-
-        if os.path.exists(file_path):
-            df_existant = pd.read_parquet(file_path)
-            df_final = pd.concat([df_existant, df_flight_list], ignore_index=True)
-            df_final.to_parquet(file_path, index=False)
-            print(f"[INFO] Datas are added in the: {file_path} file !")
-
-        else:
-            df_flight_list.to_parquet(file_path, engine="pyarrow",  index=False)
-            print(f"[INFO] Datas are available in the: {file_path} file !")
-
-    #Existing file verification
-    #def save_datas(self):
-
-
-
 if __name__ == "__main__":
-    LufthansaFly().get_datas("2026-03-27T14:00")
+    print(LufthansaFly().get_flights("2026-03-27T14:00"))

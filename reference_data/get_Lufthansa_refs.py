@@ -6,7 +6,9 @@ import pandas as pd
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "id"))
 from identification import LufthansaAPI
 
-wanted_items = 10400 # nb airports to fetch (default 10400 for all)
+datas_ref_path = os.getenv("Datas_ref_path")
+
+wanted_items = 20000 # nb airports to fetch (default 10500 for all)
 pd.set_option('display.max_rows', wanted_items)
 pd.set_option('display.max_columns', 10)
 pd.set_option('display.max_colwidth', None)
@@ -24,7 +26,7 @@ class LufthansaRefs:
     def get_airports(self):
         url = f"{self.api.url}/mds-references/airports"
         airports_df = pd.DataFrame()
-        for i in range(int(wanted_items / 100)):
+        for i in range(wanted_items // 100):
             data_airports_json = requests.get(f"{url}/?lang=UK&limit=100&offset={i*100}&LHoperated=0", headers=self.headers).json().get('AirportResource', {}).get('Airports', {}).get('Airport', []) # Get data airport
             temp_df = pd.DataFrame({
                                         'Airport_IATA': [code["AirportCode"] for code in data_airports_json],
@@ -65,6 +67,7 @@ class LufthansaRefs:
     # Get all datas and merge them in a csv file
     def get_datas(self):
         name_parquet = "airports_references.parquet"
+        file_path = os.path.join(datas_ref_path, name_parquet)
         airports_df = self.get_airports()
         time.sleep(5)
         countries_df = self.get_countries()
@@ -72,7 +75,7 @@ class LufthansaRefs:
         refs_df = refs_df.reset_index()
         refs_df = refs_df[['Airport_IATA', 'Airport_Name', 'Country_Code', 'Country_Name', 'Latitude', 'Longitude']]
         refs_df.set_index('Airport_IATA', inplace=True)
-        refs_df.to_parquet(name_parquet, engine="pyarrow",  index=True)
+        refs_df.to_parquet(file_path, engine="pyarrow",  index=True)
         print(f"[INFO] The references are available in the: {name_parquet} file !")       
 
 
