@@ -12,6 +12,7 @@ current_folder = os.path.dirname(__file__)
 df_IATA_refs = pd.read_parquet(os.path.join(current_folder, "..", "reference_data", "airports_references.parquet"))
 load_dotenv()
 datas_path = os.getenv("Datas_path")
+filename_flight = "_flightdatas.parquet"
 
 #Open-Meteo config
 cache_session = requests_cache.CachedSession('.cache', expire_after = -1)
@@ -26,9 +27,8 @@ class Weather:
         self.date = date
 
     def extract_weather(self):
-        self.loading_datas()
-        if self.df_IATA_l_L is None:
-            return
+        if self.loading_datas() is None:
+            return None
 
         url = "https://archive-api.open-meteo.com/v1/archive"
         params = {
@@ -46,7 +46,7 @@ class Weather:
 
 
     def loading_datas(self):
-        file_name = f"{self.date}_flydatas.parquet"
+        file_name = self.date + filename_flight
         file_path = os.path.join(datas_path, file_name)
 
         if os.path.exists(file_path):
@@ -55,7 +55,7 @@ class Weather:
             self.liste_IATA = df_IATA.drop_duplicates().tolist()
         
         else:
-            print(f"[WARNING] No {self.date}_flydatas.parquet file existing")
+            print(f"[WARNING] No {file_name} file existing")
             return None
 
         self.df_IATA_l_L = df_IATA_refs[df_IATA_refs.index.isin(self.liste_IATA)]
