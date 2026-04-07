@@ -18,7 +18,12 @@ limit_call_per_hour = 1000
 
 class LufthansaFly:
     #Identification
-    def __init__(self):
+    def __init__(self, date: str):
+        """
+        date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
+        """
+        self.date = date
+
         self.api = LufthansaAPI()
         if self.api.token is None:
             self.token = self.api.get_token()
@@ -27,15 +32,11 @@ class LufthansaFly:
         self.headers = {'Authorization': f'Bearer {self.token}'}
 
     # Get landed flights informations
-    def get_flights(self, date: str):
-        """
-        date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
-        """
-        self.date = date
+    def extract_flights(self):
         url = f"{self.api.url}/operations/customerflightinformation/arrivals"
         df_flight_list = pd.DataFrame()
         for airport in airports_list:
-            data_json = requests.get(f"{url}/{airport}/{date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
+            data_json = requests.get(f"{url}/{airport}/{self.date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
             filtered_json = [data for data in data_json if data["Arrival"]["Status"]["Description"] == "Flight Landed"]
             df_list = pd.DataFrame({
                     'Flight_Number': [f"{flight['OperatingCarrier']['AirlineID']}{flight['OperatingCarrier']['FlightNumber']}" for flight in filtered_json],

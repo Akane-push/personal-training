@@ -19,12 +19,13 @@ retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
 class Weather:
-    def get_weather(self, date: str):
+    def __init__(self, date: str):
         """
-        date = 'AAAA-MM-DD'
+        date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
         """
         self.date = date
 
+    def extract_weather(self):
         self.loading_datas()
         if self.df_IATA_l_L is None:
             return
@@ -99,7 +100,5 @@ class Weather:
             self.hourly_df = pd.concat([self.hourly_df, hourly_data], axis = 0)
         return self.hourly_df
 
-
-
 if __name__ == "__main__":
-    print(Weather().get_weather("2026-03-30").head())
+    print(Weather("2026-03-30").get_weather().head())

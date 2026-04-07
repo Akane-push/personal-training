@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 #Loading required files
 current_folder = os.path.dirname(__file__)
 from flight_data import LufthansaFly
-#from weather_data import weather_data
+from weather_data import Weather
 
 load_dotenv()
 datas_path = os.getenv("Datas_path")
@@ -16,15 +16,20 @@ datas_path = os.getenv("Datas_path")
 class GetDatas:
     def __init__(self, date: str):
         """
-        date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
+        date = 'AAAA-MM-DD'
         """
         self.date = date
-        self.df_flight_list = LufthansaFly().get_flights(self.date)
 
 
     #Generate the files
-    def get_datas(self):
-        name_data_file = f"{self.date.split('T')[0]}_flydatas.parquet"
+    def get_flights(self, time: str):
+        """
+        time = 'HH:MM'
+        """
+        date_time = self.date + "T" + time
+        self.df_flight_list = LufthansaFly(date_time).extract_flights()
+
+        name_data_file = f"{self.date}_flydatas.parquet"
         file_path = os.path.join(datas_path, name_data_file)
 
         if os.path.exists(file_path):
@@ -37,8 +42,21 @@ class GetDatas:
             self.df_flight_list.to_parquet(file_path, engine="pyarrow",  index=False)
             print(f"[INFO] Datas are available in the: {file_path} file !")
 
+    def get_weather(self):
+        self.df_weather = Weather(self.date).extract_weather()
+
+        name_data_file = f"{self.date}_weatherdatas.parquet"
+        file_path = os.path.join(datas_path, name_data_file)
+
+        self.df_weather.to_parquet(file_path, engine="pyarrow",  index=False)
+        print(f"[INFO] Datas are available in the: {file_path} file !")
+
+    #def fused_datas(self):
+        
+
     #Existing file verification
     #def save_datas(self):
 
 if __name__ == "__main__":
-    GetDatas("2026-03-29T14:00").get_datas()
+    #GetDatas("2026-04-02").get_flights("14:00")
+    GetDatas("2026-04-01").get_weather()
