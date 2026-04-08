@@ -37,7 +37,7 @@ class LufthansaFly:
         df_flight_list = pd.DataFrame()
         for airport in airports_list:
             data_json = requests.get(f"{url}/{airport}/{self.date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
-            filtered_json = [data for data in data_json if data["Arrival"]["Status"]["Description"] == "Flight Landed"]
+            filtered_json = [data for data in data_json if isinstance(data, dict) and data.get("Arrival", {}).get("Status", {}).get("Description") == "Flight Landed"]
             df_list = pd.DataFrame({
                     'Flight_Number': [f"{flight['OperatingCarrier']['AirlineID']}{flight['OperatingCarrier']['FlightNumber']}" for flight in filtered_json],
                     'Departure_IATA': [code["Departure"]["AirportCode"] for code in filtered_json],
@@ -54,7 +54,7 @@ class LufthansaFly:
                                     })
             #print(df_list)
             df_flight_list = pd.concat([df_flight_list, df_list], axis = 0)
-            time.sleep(6)
+            time.sleep(5)
         return df_flight_list
 
 if __name__ == "__main__":

@@ -1,4 +1,12 @@
 [
-    "CDG",
-    "FRA"
+    "LHR", "CDG", "AMS", "FRA", "MAD", "BCN", "IST", "SVO", "MUC", "LGW",
+    "FCO", "DUB", "ORY", "VIE", "ZRH", "LIS", "CPH", "PMI", "MAN", "MXP",
+    "OSL", "DME", "STN", "BRU", "ARN", "ATH", "DUS", "TXL", "VKO", "HEL",
+    "AGP", "LED", "WAW", "GVA", "HAM", "PRG", "LTN", "BUD", "EDI", "ALC",
+    "NCE", "OTP", "CGN", "BGY", "SXF", "KBP", "BHX", "OPO", "STR", "VCE",
+    "LYS", "CTA", "KEF", "GLA", "TLS", "MRS", "BLQ", "BRS", "BSL", "FAO",
+    "NCL", "NAP", "IBZ", "HER", "CRL", "VLC", "RIX", "BOD", "SVQ", "MLA",
+    "SKG", "NTE", "SOF", "PMO", "RHO", "EIN", "GOT", "LIN", "BGO", "HAJ",
+    "BFS", "BEG", "BIO", "CIA", "BRI", "PSA", "GDN", "LCY", "MSQ", "VNO",
+    "LPL", "KTW", "CAG", "EMA", "KRR", "LUX", "TRD"
 ]

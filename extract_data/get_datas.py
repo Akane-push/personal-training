@@ -64,5 +64,5 @@ class GetDatas:
     #def save_datas(self):
 
 if __name__ == "__main__":
-    #GetDatas("2026-04-01").get_flights("14:00")
-    GetDatas("2026-04-03").get_weather()
+    GetDatas("2026-04-04").get_flights("15:00")
+    GetDatas("2026-04-04").get_weather()
