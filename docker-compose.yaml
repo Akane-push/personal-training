@@ -1,0 +1,65 @@
+x-airflow-common: &airflow-common
+  build: 
+    context: .
+    dockerfile: ./airflow/Dockerfile
+  environment:
+    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/airflow
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+  env_file:
+    - .env
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./extract_data:/opt/airflow/extract_data
+    - ./id:/opt/airflow/id
+    - ./reference_data:/opt/airflow/reference_data
+    - ${DATAS_PATH}:/opt/airflow/output
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=airflow
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    depends_on:
+      postgres:
+          condition: service_healthy
+      airflow-init:
+          condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+  
+  airflow-init:
+    <<: *airflow-common
+    build: 
+      context: .
+      dockerfile: ./airflow/Dockerfile
+    command: >
+      bash -c "airflow db migrate &&
+      airflow users create
+      --username ${AIRFLOW_USER}
+      --firstname admin
+      --lastname admin
+      --role Admin
+      --email admin@example.com
+      --password ${AIRFLOW_PASSWORD} || true"
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+
+  
