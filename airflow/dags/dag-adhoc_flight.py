@@ -15,7 +15,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='ad_hoc',
+    dag_id='ad_hoc_flight',
     default_args=default_args,
     description='A simple ETL pipeline',
     schedule_interval=None,

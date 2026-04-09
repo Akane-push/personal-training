@@ -7,6 +7,7 @@ x-airflow-common: &airflow-common
     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
     - PYTHONPATH=/opt/airflow/reference_data:/opt/airflow/id:/opt/airflow/extract_data
     - SERVICE_NAME=airflow
+    - TZ=Europe/Paris
   env_file:
     - .env
   volumes:
