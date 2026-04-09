@@ -45,6 +45,10 @@ class GetDatas:
         date_time = self.date + "T" + time
         self.df_flight_list = self.LufthansaFly(date_time).extract_flights()
 
+        if self.df_flight_list.empty:
+            print("[INFO] No available datas")
+            return
+
         name_data_file = self.date + filename_flight
         file_path = os.path.join(self.datas_path, name_data_file)
 
