@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 current_folder = os.path.dirname(__file__)
 df_IATA_refs = pd.read_parquet(os.path.join(current_folder, "..", "reference_data", "airports_references.parquet"))
 load_dotenv()
-datas_path = os.getenv("Datas_path")
 filename_flight = "_flightdatas.parquet"
 
 #Open-Meteo config
@@ -25,6 +24,17 @@ class Weather:
         date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
         """
         self.date = date
+        self.datas_path = self.service_check()
+
+    #Change the path depending on the services
+    def service_check(self):
+        service = os.getenv("SERVICE_NAME", "unknown")
+
+        if service == "airflow":
+            return "/opt/airflow/output"
+        
+        else:
+            return os.getenv("Datas_path")
 
     def extract_weather(self):
         if self.loading_datas() is None:
@@ -47,7 +57,7 @@ class Weather:
 
     def loading_datas(self):
         file_name = self.date + filename_flight
-        file_path = os.path.join(datas_path, file_name)
+        file_path = os.path.join(self.datas_path, file_name)
 
         if os.path.exists(file_path):
             self.df_flight_list = pd.read_parquet(file_path)
