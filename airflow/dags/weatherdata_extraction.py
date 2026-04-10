@@ -15,7 +15,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='run_extraction',
+    dag_id='run_weather_extraction',
     default_args=default_args,
     description='A simple ETL pipeline',
     schedule='0 1 * * *',
