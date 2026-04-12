@@ -55,6 +55,7 @@ class GetDatas:
         if os.path.exists(file_path):
             df_existant = pd.read_parquet(file_path)
             df_final = pd.concat([df_existant, self.df_flight_list], ignore_index=True)
+            df_final.drop_duplicates(inplace=True)
             df_final.to_parquet(file_path, index=False)
             print(f"[INFO] Datas are added in the: {file_path} file !")
 

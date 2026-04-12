@@ -42,11 +42,11 @@ class LufthansaRefs:
         for i in range(wanted_items // 100):
             data_airports_json = requests.get(f"{url}/?lang=UK&limit=100&offset={i*100}&LHoperated=0", headers=self.headers).json().get('AirportResource', {}).get('Airports', {}).get('Airport', []) # Get data airport
             temp_df = pd.DataFrame({
-                                        'Airport_IATA': [code.get("AirportCode") for code in data_airports_json if code.get("statut") == "ok"],
-                                        'Airport_Name': [name.get("Names",{}).get("Name",{}).get("$") for name in data_airports_json if name.get("statut") == "ok"],
-                                        'Country_Code': [country.get("CountryCode") for country in data_airports_json if country.get("statut") == "ok"],
-                                        'Latitude': [item.get("Position",{}).get("Coordinate",{}).get("Latitude") for item in data_airports_json if item.get("statut") == "ok"],
-                                        'Longitude': [item.get("Position",{}).get("Coordinate",{}).get("Longitude") for item in data_airports_json if item.get("statut") == "ok"]
+                                        'Airport_IATA': [code.get("AirportCode") for code in data_airports_json],
+                                        'Airport_Name': [name.get("Names",{}).get("Name",{}).get("$") for name in data_airports_json],
+                                        'Country_Code': [country.get("CountryCode") for country in data_airports_json],
+                                        'Latitude': [item.get("Position",{}).get("Coordinate",{}).get("Latitude") for item in data_airports_json],
+                                        'Longitude': [item.get("Position",{}).get("Coordinate",{}).get("Longitude") for item in data_airports_json]
                                     })
             airports_df = pd.concat([airports_df, temp_df], axis = 0)
             time.sleep(5)
@@ -60,8 +60,8 @@ class LufthansaRefs:
         for i in range(3): 
             data_countries_json = requests.get(f"{url}/?lang=UK&limit=100&offset={i*100}", headers=self.headers).json().get('CountryResource', {}).get('Countries', {}).get('Country', []) # Get data country
             temp_df = pd.DataFrame({
-                                        'Country_Code': [code.get("CountryCode") for code in data_countries_json if code.get("statut") == "ok"],
-                                        'Country_Name': [name.get("Names",{}).get("Name",{}).get("$") for name in data_countries_json if name.get("statut") == "ok"]
+                                        'Country_Code': [code.get("CountryCode") for code in data_countries_json],
+                                        'Country_Name': [name.get("Names",{}).get("Name",{}).get("$") for name in data_countries_json]
                                     })
             countries_df = pd.concat([countries_df, temp_df], axis = 0)
             time.sleep(5)

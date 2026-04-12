@@ -20,7 +20,7 @@ with DAG(
     default_args=default_args,
     description='A simple ETL pipeline',
     schedule='0 */3 * * *',
-    start_date=pendulum.datetime(2026, 4, 10, tz=pendulum.timezone("Europe/Paris")),
+    start_date=pendulum.datetime(2026, 4, 12, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
     tags=['etl']

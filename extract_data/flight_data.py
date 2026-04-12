@@ -51,18 +51,18 @@ class LufthansaFly:
             data_json = requests.get(f"{url}/{airport}/{self.date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
             filtered_json = [data for data in data_json if isinstance(data, dict) and data.get("Arrival", {}).get("Status", {}).get("Description") == "Flight Landed"]
             df_list = pd.DataFrame({
-                    'Flight_Number': [f"{flight.get('OperatingCarrier',{}).get('AirlineID')}{flight.get('peratingCarrier',{}).get('FlightNumber')}" for flight in filtered_json if flight.get("statut") == "ok"],
-                    'Departure_IATA': [code.get("Departure",{}).get("AirportCode") for code in filtered_json if code.get("statut") == "ok"],
-                    'Dep_Scheduled_Date': [date.get("Departure",{}).get("Scheduled",{}).get("Date") for date in filtered_json if date.get("statut") == "ok"],
-                    'Dep_Scheduled_Time': [time.get("Departure",{}).get("Scheduled",{}).get("Time") for time in filtered_json if time.get("statut") == "ok"],
-                    'Dep_Actual_Date': [date.get("Departure",{}).get("Actual",{}).get("Date") for date in filtered_json if date.get("statut") == "ok"],
-                    'Dep_Actual_Time': [time.get("Departure",{}).get("Actual",{}).get("Time") for time in filtered_json if time.get("statut") == "ok"],
-                    'Arrival_IATA': [code.get("Arrival",{}).get("AirportCode") for code in filtered_json if code.get("statut") == "ok"],
-                    'Arr_Scheduled_Date': [date.get("Arrival",{}).get("Scheduled",{}).get("Date") for date in filtered_json if date.get("statut") == "ok"],
-                    'Arr_Scheduled_Time': [time.get("Arrival",{}).get("Scheduled",{}).get("Time") for time in filtered_json if time.get("statut") == "ok"],
-                    'Arr_Actual_Date': [date.get("Arrival",{}).get("Actual",{}).get("Date") for date in filtered_json if date.get("statut") == "ok"],
-                    'Arr_Actual_Time': [time.get("Arrival",{}).get("Actual",{}).get("Time") for time in filtered_json if time.get("statut") == "ok"],
-                    'Aircraft_Code': [code.get('Equipment',{}).get('AircraftCode') for code in filtered_json if code.get("statut") == "ok"]
+                    'Flight_Number': [f"{flight.get('OperatingCarrier',{}).get('AirlineID')}{flight.get('peratingCarrier',{}).get('FlightNumber')}" for flight in filtered_json],
+                    'Departure_IATA': [code.get("Departure",{}).get("AirportCode") for code in filtered_json],
+                    'Dep_Scheduled_Date': [date.get("Departure",{}).get("Scheduled",{}).get("Date") for date in filtered_json],
+                    'Dep_Scheduled_Time': [time.get("Departure",{}).get("Scheduled",{}).get("Time") for time in filtered_json],
+                    'Dep_Actual_Date': [date.get("Departure",{}).get("Actual",{}).get("Date") for date in filtered_json],
+                    'Dep_Actual_Time': [time.get("Departure",{}).get("Actual",{}).get("Time") for time in filtered_json],
+                    'Arrival_IATA': [code.get("Arrival",{}).get("AirportCode") for code in filtered_json],
+                    'Arr_Scheduled_Date': [date.get("Arrival",{}).get("Scheduled",{}).get("Date") for date in filtered_json],
+                    'Arr_Scheduled_Time': [time.get("Arrival",{}).get("Scheduled",{}).get("Time") for time in filtered_json],
+                    'Arr_Actual_Date': [date.get("Arrival",{}).get("Actual",{}).get("Date") for date in filtered_json],
+                    'Arr_Actual_Time': [time.get("Arrival",{}).get("Actual",{}).get("Time") for time in filtered_json],
+                    'Aircraft_Code': [code.get('Equipment',{}).get('AircraftCode') for code in filtered_json]
                                     })
             #print(airport)
             df_flight_list = pd.concat([df_flight_list, df_list], axis = 0)
