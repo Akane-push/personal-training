@@ -1,9 +1,9 @@
+import pendulum
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
 from get_datas import GetDatas
-import pendulum
 
 def run_extraction():
     GetDatas(datetime.now().strftime("%Y-%m-%d")).get_flights(datetime.now().strftime("%H:00"))
@@ -20,7 +20,7 @@ with DAG(
     default_args=default_args,
     description='A simple ETL pipeline',
     schedule='0 */3 * * *',
-    start_date=datetime(2026, 4, 10, tz=pendulum.timezone("Europe/Paris")),
+    start_date=pendulum.datetime(2026, 4, 10, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
     tags=['etl']
