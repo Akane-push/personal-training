@@ -44,7 +44,7 @@ class Weather:
         params = {
             "latitude": self.df_IATA_l_L['Latitude'].tolist(),
             "longitude": self.df_IATA_l_L['Longitude'].tolist(),
-            "start_date": self.date, #(datetime.strptime(self.date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d"),
+            "start_date": (datetime.strptime(self.date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d"),
             "end_date": self.date,
             "hourly": ["temperature_2m", "wind_speed_100m", "wind_direction_100m", "surface_pressure", "weather_code", "precipitation", "wind_gusts_10m", "wind_direction_10m", "wind_speed_10m", "cloud_cover", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high"],
             "timezone": "auto",
