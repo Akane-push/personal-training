@@ -30,7 +30,7 @@ class LufthansaRefs:
 
         else:
             current_folder = os.path.dirname(__file__)
-            sys.path.append(os.path.join(current_folder, "..", "id"))
+            sys.path.append(os.path.join(current_folder, "..", "tools"))
             from identification import LufthansaAPI
             self.LufthansaAPI = LufthansaAPI
             return os.getenv("Datas_ref_path")

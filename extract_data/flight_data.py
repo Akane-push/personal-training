@@ -39,7 +39,7 @@ class LufthansaFly:
             self.LufthansaAPI = LufthansaAPI
 
         else:
-            sys.path.append(os.path.join(current_folder, "..", "id"))
+            sys.path.append(os.path.join(current_folder, "..", "tools"))
             from identification import LufthansaAPI
             self.LufthansaAPI = LufthansaAPI
 

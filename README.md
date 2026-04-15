@@ -47,11 +47,11 @@ Lufth_grant_type=client_credentials
 # --- Base de données PostgreSQL pour Airflow ---
 POSTGRES_USER=votre_user
 POSTGRES_PASSWORD=votre_mot_de_passe_fort
-DATAS_PATH=/chemin/absolu/vers/votre/dossier/data/local
+EXTRACTED_PATH=/chemin/absolu/vers/votre/dossier/data/local
+ARCHIVES_PATH=/chemin/absolu/vers/votre/dossier/data/local
 
 # --- Airflow ---
 AIRFLOW_USER=votre_user
 AIRFLOW_PASSWORD=votre_mot_de_passe_fort
 AIRFLOW_UID=
-AIRFLOW_GID=
 ```
