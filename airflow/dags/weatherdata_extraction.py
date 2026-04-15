@@ -24,7 +24,7 @@ with DAG(
     start_date=pendulum.datetime(2026, 4, 11, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
-    tags=['etl']
+    tags=['elt', 'extract']
 ) as dag:
     extraction_flight = PythonOperator(
         task_id="extract_weather",

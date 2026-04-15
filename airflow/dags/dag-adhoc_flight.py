@@ -21,7 +21,7 @@ with DAG(
     schedule_interval=None,
     catchup=False,
     max_active_runs=1,
-    tags=['test']
+    tags=['test', 'extract']
 ) as dag:
     ad_hoc_extract_flight = PythonOperator(
         task_id="extract_flight",

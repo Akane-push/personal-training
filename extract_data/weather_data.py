@@ -36,6 +36,7 @@ class Weather:
         else:
             return os.getenv("Datas_path")
 
+    #Load Datas from Open-Meteo API
     def extract_weather(self):
         if self.loading_datas() is None:
             return None
@@ -50,11 +51,10 @@ class Weather:
             "timezone": "auto",
         }
         self.responses = openmeteo.weather_api(url, params = params)
-
         
         return self.openmeteo_extract()
 
-
+    #Load flight data file and extract IATA list, longitude and latitude
     def loading_datas(self):
         file_name = self.date + filename_flight
         file_path = os.path.join(self.datas_path, file_name)
@@ -72,7 +72,7 @@ class Weather:
         self.df_IATA_l_L = self.df_IATA_l_L.drop(self.df_IATA_l_L.columns[[0, 1, 2]], axis=1)
         return self.df_IATA_l_L
 
-
+    #Transform Open-Meteo data into a data frame
     def openmeteo_extract(self):
         self.hourly_df = pd.DataFrame()
         for i in range(len(self.responses)):

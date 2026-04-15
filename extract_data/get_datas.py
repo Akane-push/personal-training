@@ -17,6 +17,7 @@ class GetDatas:
         self.date = date
         self.datas_path = self.service_check()
 
+    #Change the path depending on the services
     def service_check(self):
         service = os.getenv("SERVICE_NAME", "unknown")
 
