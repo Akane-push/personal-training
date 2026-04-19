@@ -1,8 +1,10 @@
 dotenv
 requests
 pandas
+polars-lts-cpu
 pyarrow
 datetime
 openmeteo-requests
 requests-cache
 retry-requests
+joblib
