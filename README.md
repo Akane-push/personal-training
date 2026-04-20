@@ -24,8 +24,9 @@ Le système intègrera un pipeline ELT orchestré par Airflow, un stockage au fo
 - [x] Récupération des données vols (Lufthansa) et météo (Open-Meteo)
 - [x] Stockage
 - [x] Airflow
-- [ ] Nettoyage des données pour le modèle
-- [ ] Modèle entraîné avec scikit-learn
+- [x] Nettoyage des données pour le modèle
+- [x] Modèle entraîné avec scikit-learn
+- [ ] Mettre en place un pipeline CI/CD
 - [ ] FastAPI
 
 ---
