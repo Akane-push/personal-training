@@ -43,17 +43,17 @@ class LufthansaFly:
             from identification import LufthansaAPI
             self.LufthansaAPI = LufthansaAPI
 
-    # Get landed flights informations
+    #Get landed flights informations
     def extract_flights(self):
         url = f"{self.api.url}/operations/customerflightinformation/arrivals"
         df_flight_list = pl.DataFrame()
         collected_dfs = []
         for airport in airports_list:
             data_json = requests.get(f"{url}/{airport}/{self.date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
-            filtered_json = self._flight_filter_generator(data_json)
-            df_list = pl.from_dicts(self._row_iterator(filtered_json))
+            filtered_json = self.flight_filter_generator(data_json)
+            df_list = pl.from_dicts(self.row_iterator(filtered_json))
 
-            print(airport)
+            #print(airport)
             if not df_list.is_empty():
                 collected_dfs.append(df_list)
         
@@ -65,14 +65,15 @@ class LufthansaFly:
             df_flight_list = pl.DataFrame()
 
         return df_flight_list
-            
-    def _flight_filter_generator(self, flights):
+
+
+    #Reduces computational load        
+    def flight_filter_generator(self, flights):
         for data in flights:
             if isinstance(data, dict) and data.get("Arrival", {}).get("Status", {}).get("Description") == "Flight Landed":
                 yield data
 
-    def _row_iterator(self, flights_gen):
-        """Générateur : transforme chaque vol filtré en dictionnaire ligne par ligne."""
+    def row_iterator(self, flights_gen):
         for flight in flights_gen:
             op_carrier = flight.get('OperatingCarrier', {})
             dep_info = flight.get('Departure', {})

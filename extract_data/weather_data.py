@@ -90,7 +90,7 @@ class Weather:
                     start = datetime.fromtimestamp(hourly.Time() + response.UtcOffsetSeconds()),
                     end = datetime.fromtimestamp(hourly.TimeEnd() + response.UtcOffsetSeconds()),
                     interval = f"{hourly.Interval()}s",
-                    closed = "left", # <--- C'est la clé : on exclut la dernière borne
+                    closed = "left",
                     eager = True)}
 
             hourly_data["IATA"] = self.liste_IATA[i]

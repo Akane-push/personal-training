@@ -37,6 +37,8 @@ class XGBGridSearch():
         self.x_train = self.encoding(self.x_train)
         self.x_test = self.encoding(self.x_test)
 
+
+    #Converts columns to match the model
     def encoding(self, df):
         numerical_cols = df.select(cs.numeric()).columns
         categorical_cols = df.select(cs.string()).columns
@@ -56,8 +58,8 @@ class XGBGridSearch():
         df = pl.concat([train_numerical, train_categorical],  how="horizontal")
         df = df[sorted(df.columns)]
         return df
-    
 
+    #Testing parameters using GridSearch
     def found_parameters(self):
         model = XGBClassifier(objective='binary:logistic', eval_metric='auc')
 
@@ -78,6 +80,7 @@ class XGBGridSearch():
         return grid_search.best_estimator_
 
 
+    #Encodes the model with the selected parameters
     def training_model(self):
         params = {'objective': 'binary:logistic',
                     'eval_metric': 'auc',
