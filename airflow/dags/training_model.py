@@ -20,7 +20,7 @@ with DAG(
     dag_id='training_model',
     default_args=default_args,
     description='Launch training model',
-    schedule="0 2 * * 1", 
+    schedule="0 2 * * 0", 
     start_date=pendulum.datetime(2024, 4, 20, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
