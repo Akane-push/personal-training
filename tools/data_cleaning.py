@@ -1,9 +1,9 @@
 import polars as pl
+from joblib import load
 
 pl.Config.set_tbl_cols(26)
 
 class DataCleaning():
-    #fusion des df
     def __init__(self, df_flight : pl.DataFrame, df_weather : pl.DataFrame):
         df_flight = df_flight.unique()
         df_flight = df_flight.drop_nulls()
@@ -22,14 +22,15 @@ class DataCleaning():
         df_flight = df_flight.with_columns(((pl.col("Arr_Actual_DateTime") - pl.col("Arr_Scheduled_DateTime")).dt.total_seconds() // 60).alias("Arr_Delay"))
 
         df_flight = df_flight.with_columns(pl.when(pl.col("Arr_Delay") > 0).then(1).otherwise(0).alias("Delay"))
-
-        df_weather = df_weather.sort("DateTime")
-        df_flight = df_flight.sort("Dep_Actual_DateTime")
+        
+        df_weather = df_weather.sort(["IATA", "DateTime"])
+        df_flight = df_flight.sort(["Departure_IATA", "Dep_Actual_DateTime"])
         self.df_final = df_flight.join_asof(df_weather, left_on="Dep_Actual_DateTime", right_on="DateTime", by_left="Departure_IATA", by_right="IATA", strategy="forward", suffix="_Dep")
-        df_flight = df_flight.sort("Arr_Scheduled_DateTime")
+        df_flight = df_flight.sort(["Arrival_IATA", "Arr_Scheduled_DateTime"])
         self.df_final = self.df_final.join_asof(df_weather, left_on="Arr_Scheduled_DateTime", right_on="DateTime", by_left="Arrival_IATA", by_right="IATA", strategy="forward", suffix="_Arr")
 
-        self.df_final = self.df_final.drop(["DateTime", "DateTime_Arr"])
+        self.df_final = self.df_final.drop(["DateTime", "DateTime_Arr", "Dep_Actual_DateTime", "Dep_Scheduled_DateTime",
+                                            "Arr_Actual_DateTime", "Arr_Scheduled_DateTime", "Arr_Delay"])
         self.df_final = self.df_final.drop_nulls(subset=["Temperature_2m", "Wind_Speed_100m", "Wind_Direction_100m",
                                                          "Surface_Pressure", "Weather_Code", "Precipitation", "Temperature_2m_Arr",
                                                          "Wind_Speed_100m_Arr", "Wind_Direction_100m_Arr", "Surface_Pressure_Arr",
@@ -67,6 +68,6 @@ class DataCleaning():
         self.df_final = self.df_final.with_columns([pl.col("Weather_Code").cast(pl.String).replace(replacement_weather_dict).alias("Weather_Description"),
                                                     pl.col("Weather_Code_Arr").cast(pl.String).replace(replacement_weather_dict).alias("Weather_Description_Arr")])
 
-
+    
     def get_dataframe(self) :
         return self.df_final

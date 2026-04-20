@@ -8,3 +8,5 @@ openmeteo-requests
 requests-cache
 retry-requests
 joblib
+scikit-learn
+xgboost
