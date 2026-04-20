@@ -2,7 +2,7 @@ import sys
 import os
 import time
 import requests
-import pandas as pd
+import polars as pl
 
 wanted_items = 20000 # nb airports to fetch (default 10500 for all)
 pd.set_option('display.max_rows', wanted_items)
@@ -38,17 +38,17 @@ class LufthansaRefs:
     # Airport import
     def get_airports(self):
         url = f"{self.api.url}/mds-references/airports"
-        airports_df = pd.DataFrame()
+        airports_df = pl.DataFrame()
         for i in range(wanted_items // 100):
             data_airports_json = requests.get(f"{url}/?lang=UK&limit=100&offset={i*100}&LHoperated=0", headers=self.headers).json().get('AirportResource', {}).get('Airports', {}).get('Airport', []) # Get data airport
-            temp_df = pd.DataFrame({
+            temp_df = pl.DataFrame({
                                         'Airport_IATA': [code.get("AirportCode") for code in data_airports_json],
                                         'Airport_Name': [name.get("Names",{}).get("Name",{}).get("$") for name in data_airports_json],
                                         'Country_Code': [country.get("CountryCode") for country in data_airports_json],
                                         'Latitude': [item.get("Position",{}).get("Coordinate",{}).get("Latitude") for item in data_airports_json],
                                         'Longitude': [item.get("Position",{}).get("Coordinate",{}).get("Longitude") for item in data_airports_json]
                                     })
-            airports_df = pd.concat([airports_df, temp_df], axis = 0)
+            airports_df = pl.concat([airports_df, temp_df])
             time.sleep(5)
         airports_df.set_index('Airport_IATA', inplace=True)
         return airports_df
@@ -56,14 +56,14 @@ class LufthansaRefs:
     # Country Name
     def get_countries(self):
         url = f"{self.api.url}/mds-references/countries"
-        countries_df = pd.DataFrame()
+        countries_df = pl.DataFrame()
         for i in range(3): 
             data_countries_json = requests.get(f"{url}/?lang=UK&limit=100&offset={i*100}", headers=self.headers).json().get('CountryResource', {}).get('Countries', {}).get('Country', []) # Get data country
-            temp_df = pd.DataFrame({
+            temp_df = pl.DataFrame({
                                         'Country_Code': [code.get("CountryCode") for code in data_countries_json],
                                         'Country_Name': [name.get("Names",{}).get("Name",{}).get("$") for name in data_countries_json]
                                     })
-            countries_df = pd.concat([countries_df, temp_df], axis = 0)
+            countries_df = pl.concat([countries_df, temp_df])
             time.sleep(5)
         countries_df.set_index('Country_Code', inplace=True)
         return countries_df

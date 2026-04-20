@@ -2,7 +2,7 @@ import sys
 import os
 import time
 import requests
-import pandas as pd
+import polars as pl
 import json
 
 #Loading required files
@@ -46,11 +46,11 @@ class LufthansaFly:
     # Get landed flights informations
     def extract_flights(self):
         url = f"{self.api.url}/operations/customerflightinformation/arrivals"
-        df_flight_list = pd.DataFrame()
+        df_flight_list = pl.DataFrame()
         for airport in airports_list:
             data_json = requests.get(f"{url}/{airport}/{self.date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
             filtered_json = [data for data in data_json if isinstance(data, dict) and data.get("Arrival", {}).get("Status", {}).get("Description") == "Flight Landed"]
-            df_list = pd.DataFrame({
+            df_list = pl.DataFrame({
                     'Flight_Number': [f"{flight.get('OperatingCarrier',{}).get('AirlineID')}{flight.get('peratingCarrier',{}).get('FlightNumber')}" for flight in filtered_json],
                     'Departure_IATA': [code.get("Departure",{}).get("AirportCode") for code in filtered_json],
                     'Dep_Scheduled_Date': [date.get("Departure",{}).get("Scheduled",{}).get("Date") for date in filtered_json],
@@ -65,7 +65,7 @@ class LufthansaFly:
                     'Aircraft_Code': [code.get('Equipment',{}).get('AircraftCode') for code in filtered_json]
                                     })
             #print(airport)
-            df_flight_list = pd.concat([df_flight_list, df_list], axis = 0)
+            df_flight_list = pl.concat([df_flight_list, df_list])
             time.sleep(5)
         return df_flight_list
 

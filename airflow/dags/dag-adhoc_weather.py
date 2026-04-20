@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from get_datas import GetDatas
 
 def Extract_Ad_Hoc():
-    GetDatas("2026-04-04").get_weather()
+    GetDatas("2026-04-12").get_weather()
 
 default_args = {
     'owner': 'dev_team',

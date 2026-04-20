@@ -1,5 +1,5 @@
 import openmeteo_requests
-import pandas as pd
+import polars as pl
 import sys
 import os
 from dotenv import load_dotenv
@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 
 #Loading required files
 current_folder = os.path.dirname(__file__)
-df_IATA_refs = pd.read_parquet(os.path.join(current_folder, "..", "reference_data", "airports_references.parquet"))
+path = os.path.join(current_folder, "..", "reference_data", "airports_references.parquet")
+df_IATA_refs = pl.read_parquet(path)
 load_dotenv()
 filename_flight = "_flightdatas.parquet"
 
@@ -60,8 +61,8 @@ class Weather:
         file_path = os.path.join(self.datas_path, file_name)
 
         if os.path.exists(file_path):
-            self.df_flight_list = pd.read_parquet(file_path)
-            df_IATA = pd.concat([self.df_flight_list['Departure_IATA'], self.df_flight_list['Arrival_IATA']], ignore_index=True)
+            self.df_flight_list = pl.read_parquet(file_path)
+            df_IATA = pl.concat([self.df_flight_list['Departure_IATA'], self.df_flight_list['Arrival_IATA']])
             self.liste_IATA = df_IATA.drop_duplicates().tolist()
         
         else:
@@ -74,7 +75,7 @@ class Weather:
 
     #Transform Open-Meteo data into a data frame
     def openmeteo_extract(self):
-        self.hourly_df = pd.DataFrame()
+        self.hourly_df = pl.DataFrame()
         for i in range(len(self.responses)):
             response = self.responses[i]
             hourly = response.Hourly()
@@ -85,10 +86,10 @@ class Weather:
             hourly_weather_code = hourly.Variables(4).ValuesAsNumpy()
             hourly_precipitation = hourly.Variables(5).ValuesAsNumpy()
 
-            hourly_data = {"date": pd.date_range(
-                start = pd.to_datetime(hourly.Time() + response.UtcOffsetSeconds(), unit = "s", utc = True),
-                end =  pd.to_datetime(hourly.TimeEnd() + response.UtcOffsetSeconds(), unit = "s", utc = True),
-                freq = pd.Timedelta(seconds = hourly.Interval()),
+            hourly_data = {"date": pl.date_range(
+                start = pl.to_datetime(hourly.Time() + response.UtcOffsetSeconds(), unit = "s", utc = True),
+                end =  pl.to_datetime(hourly.TimeEnd() + response.UtcOffsetSeconds(), unit = "s", utc = True),
+                freq = pl.Timedelta(seconds = hourly.Interval()),
                 inclusive = "left"
             )}
 
@@ -100,14 +101,14 @@ class Weather:
             hourly_data["Weather_Code"] = hourly_weather_code
             hourly_data["Precipitation"] = hourly_precipitation
             
-            hourly_data = pd.DataFrame(data = hourly_data)
+            hourly_data = pl.DataFrame(data = hourly_data)
             dates_list = hourly_data["date"].dt.date.tolist()
             hours_list = hourly_data["date"].dt.strftime("%H:%M").tolist()
             hourly_data = hourly_data.drop("date", axis=1)
             hourly_data.insert(1, 'Date', dates_list)
             hourly_data.insert(2, 'Time', hours_list)
 
-            self.hourly_df = pd.concat([self.hourly_df, hourly_data], axis = 0)
+            self.hourly_df = pl.concat([self.hourly_df, hourly_data])
         return self.hourly_df
 
 if __name__ == "__main__":
