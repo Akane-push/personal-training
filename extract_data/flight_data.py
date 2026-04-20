@@ -47,27 +47,54 @@ class LufthansaFly:
     def extract_flights(self):
         url = f"{self.api.url}/operations/customerflightinformation/arrivals"
         df_flight_list = pl.DataFrame()
+        collected_dfs = []
         for airport in airports_list:
             data_json = requests.get(f"{url}/{airport}/{self.date}?limit=100", headers=self.headers).json().get('FlightInformation', {}).get('Flights', {}).get('Flight', [])
-            filtered_json = [data for data in data_json if isinstance(data, dict) and data.get("Arrival", {}).get("Status", {}).get("Description") == "Flight Landed"]
-            df_list = pl.DataFrame({
-                    'Flight_Number': [f"{flight.get('OperatingCarrier',{}).get('AirlineID')}{flight.get('peratingCarrier',{}).get('FlightNumber')}" for flight in filtered_json],
-                    'Departure_IATA': [code.get("Departure",{}).get("AirportCode") for code in filtered_json],
-                    'Dep_Scheduled_Date': [date.get("Departure",{}).get("Scheduled",{}).get("Date") for date in filtered_json],
-                    'Dep_Scheduled_Time': [time.get("Departure",{}).get("Scheduled",{}).get("Time") for time in filtered_json],
-                    'Dep_Actual_Date': [date.get("Departure",{}).get("Actual",{}).get("Date") for date in filtered_json],
-                    'Dep_Actual_Time': [time.get("Departure",{}).get("Actual",{}).get("Time") for time in filtered_json],
-                    'Arrival_IATA': [code.get("Arrival",{}).get("AirportCode") for code in filtered_json],
-                    'Arr_Scheduled_Date': [date.get("Arrival",{}).get("Scheduled",{}).get("Date") for date in filtered_json],
-                    'Arr_Scheduled_Time': [time.get("Arrival",{}).get("Scheduled",{}).get("Time") for time in filtered_json],
-                    'Arr_Actual_Date': [date.get("Arrival",{}).get("Actual",{}).get("Date") for date in filtered_json],
-                    'Arr_Actual_Time': [time.get("Arrival",{}).get("Actual",{}).get("Time") for time in filtered_json],
-                    'Aircraft_Code': [code.get('Equipment',{}).get('AircraftCode') for code in filtered_json]
-                                    })
-            #print(airport)
-            df_flight_list = pl.concat([df_flight_list, df_list])
+            filtered_json = self._flight_filter_generator(data_json)
+            df_list = pl.from_dicts(self._row_iterator(filtered_json))
+
+            print(airport)
+            if not df_list.is_empty():
+                collected_dfs.append(df_list)
+        
             time.sleep(5)
+
+        if collected_dfs:
+            df_flight_list = pl.concat(collected_dfs)
+        else:
+            df_flight_list = pl.DataFrame()
+
         return df_flight_list
+            
+    def _flight_filter_generator(self, flights):
+        for data in flights:
+            if isinstance(data, dict) and data.get("Arrival", {}).get("Status", {}).get("Description") == "Flight Landed":
+                yield data
+
+    def _row_iterator(self, flights_gen):
+        """Générateur : transforme chaque vol filtré en dictionnaire ligne par ligne."""
+        for flight in flights_gen:
+            op_carrier = flight.get('OperatingCarrier', {})
+            dep_info = flight.get('Departure', {})
+            arr_info = flight.get('Arrival', {})
+            equip_info = flight.get('Equipment', {})
+            
+            flight_num = f"{op_carrier.get('AirlineID', '')}{op_carrier.get('FlightNumber', '')}"
+
+            yield {
+                'Flight_Number': flight_num,
+                'Departure_IATA': dep_info.get("AirportCode"),
+                'Dep_Scheduled_Date': dep_info.get("Scheduled", {}).get("Date"),
+                'Dep_Scheduled_Time': dep_info.get("Scheduled", {}).get("Time"),
+                'Dep_Actual_Date': dep_info.get("Actual", {}).get("Date"),
+                'Dep_Actual_Time': dep_info.get("Actual", {}).get("Time"),
+                'Arrival_IATA': arr_info.get("AirportCode"),
+                'Arr_Scheduled_Date': arr_info.get("Scheduled", {}).get("Date"),
+                'Arr_Scheduled_Time': arr_info.get("Scheduled", {}).get("Time"),
+                'Arr_Actual_Date': arr_info.get("Actual", {}).get("Date"),
+                'Arr_Actual_Time': arr_info.get("Actual", {}).get("Time"),
+                'Aircraft_Code': equip_info.get('AircraftCode')
+            }
 
 if __name__ == "__main__":
     print(LufthansaFly().get_flights("2026-03-27T14:00"))

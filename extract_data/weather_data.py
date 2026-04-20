@@ -44,8 +44,8 @@ class Weather:
 
         url = "https://archive-api.open-meteo.com/v1/archive"
         params = {
-            "latitude": self.df_IATA_l_L['Latitude'].tolist(),
-            "longitude": self.df_IATA_l_L['Longitude'].tolist(),
+            "latitude": self.df_IATA_l_L['Latitude'].to_list(),
+            "longitude": self.df_IATA_l_L['Longitude'].to_list(),
             "start_date": (datetime.strptime(self.date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d"),
             "end_date": self.date,
             "hourly": ["temperature_2m", "wind_speed_100m", "wind_direction_100m", "surface_pressure", "weather_code", "precipitation", "wind_gusts_10m", "wind_direction_10m", "wind_speed_10m", "cloud_cover", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high"],
@@ -63,14 +63,14 @@ class Weather:
         if os.path.exists(file_path):
             self.df_flight_list = pl.read_parquet(file_path)
             df_IATA = pl.concat([self.df_flight_list['Departure_IATA'], self.df_flight_list['Arrival_IATA']])
-            self.liste_IATA = df_IATA.drop_duplicates().tolist()
+            self.liste_IATA = df_IATA.unique().to_list()
         
         else:
             print(f"[WARNING] No {file_name} file existing")
             return None
 
-        self.df_IATA_l_L = df_IATA_refs[df_IATA_refs.index.isin(self.liste_IATA)]
-        self.df_IATA_l_L = self.df_IATA_l_L.drop(self.df_IATA_l_L.columns[[0, 1, 2]], axis=1)
+        self.df_IATA_l_L = df_IATA_refs.filter(pl.col("Airport_IATA").is_in(self.liste_IATA))
+        self.df_IATA_l_L = self.df_IATA_l_L.drop(self.df_IATA_l_L.columns[:3])
         return self.df_IATA_l_L
 
     #Transform Open-Meteo data into a data frame
@@ -86,12 +86,12 @@ class Weather:
             hourly_weather_code = hourly.Variables(4).ValuesAsNumpy()
             hourly_precipitation = hourly.Variables(5).ValuesAsNumpy()
 
-            hourly_data = {"date": pl.date_range(
-                start = pl.to_datetime(hourly.Time() + response.UtcOffsetSeconds(), unit = "s", utc = True),
-                end =  pl.to_datetime(hourly.TimeEnd() + response.UtcOffsetSeconds(), unit = "s", utc = True),
-                freq = pl.Timedelta(seconds = hourly.Interval()),
-                inclusive = "left"
-            )}
+            hourly_data = {"date": pl.datetime_range(
+                    start = datetime.fromtimestamp(hourly.Time() + response.UtcOffsetSeconds()),
+                    end = datetime.fromtimestamp(hourly.TimeEnd() + response.UtcOffsetSeconds()),
+                    interval = f"{hourly.Interval()}s",
+                    closed = "left", # <--- C'est la clé : on exclut la dernière borne
+                    eager = True)}
 
             hourly_data["IATA"] = self.liste_IATA[i]
             hourly_data["Temperature_2m"] = hourly_temperature_2m
@@ -102,11 +102,11 @@ class Weather:
             hourly_data["Precipitation"] = hourly_precipitation
             
             hourly_data = pl.DataFrame(data = hourly_data)
-            dates_list = hourly_data["date"].dt.date.tolist()
-            hours_list = hourly_data["date"].dt.strftime("%H:%M").tolist()
-            hourly_data = hourly_data.drop("date", axis=1)
-            hourly_data.insert(1, 'Date', dates_list)
-            hourly_data.insert(2, 'Time', hours_list)
+            dates_list = hourly_data["date"].dt.date().to_list()
+            hours_list = hourly_data["date"].dt.strftime("%H:%M").to_list()
+            hourly_data = hourly_data.drop("date")
+            hourly_data.insert_column(1, pl.Series("Date", dates_list))
+            hourly_data.insert_column(2, pl.Series("Time", hours_list))
 
             self.hourly_df = pl.concat([self.hourly_df, hourly_data])
         return self.hourly_df

@@ -56,11 +56,11 @@ class GetDatas:
         if os.path.exists(file_path):
             df_existant = pl.read_parquet(file_path)
             df_final = pl.concat([df_existant, self.df_flight_list], how="vertical")
-            df_final.to_parquet(file_path, index=False)
+            df_final.write_parquet(file_path)
             print(f"[INFO] Datas are added in the: {file_path} file !")
 
         else:
-            self.df_flight_list.to_parquet(file_path, engine="pyarrow",  index=False)
+            self.df_flight_list.write_parquet(file_path)
             print(f"[INFO] Datas are available in the: {file_path} file !")
 
     #Generate the files for weather
@@ -73,7 +73,7 @@ class GetDatas:
         name_data_file = self.date + filename_weather
         file_path = os.path.join(self.datas_path, name_data_file)
 
-        self.df_weather.to_parquet(file_path, engine="pyarrow",  index=False)
+        self.df_weather.write_parquet(file_path)
         print(f"[INFO] Datas are available in the: {file_path} file !")
     
 
