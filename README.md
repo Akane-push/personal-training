@@ -17,8 +17,6 @@ Le système intègrera un pipeline ELT orchestré par Airflow, un stockage au fo
 2.  **Environnement Local** :
     -   Docker & Docker Compose (recommandé pour Airflow et PostgreSQL)
 
-**Il n'y a pas encore de mode démo en place.** Il est donc nécessaire de s'inscrire sur le site de Lufthansa afin de pouvoir lancer le projet: [LufthansaAPI](https://developer.lufthansa.com/io-docs)
-
 ---
 
 ## Avancement
@@ -26,8 +24,9 @@ Le système intègrera un pipeline ELT orchestré par Airflow, un stockage au fo
 - [x] Récupération des données vols (Lufthansa) et météo (Open-Meteo)
 - [x] Stockage
 - [x] Airflow
-- [ ] Nettoyage des données pour le modèle
-- [ ] Modèle entraîné avec scikit-learn
+- [x] Nettoyage des données pour le modèle
+- [x] Modèle entraîné avec scikit-learn
+- [ ] Mettre en place un pipeline CI/CD
 - [ ] FastAPI
 
 ---
