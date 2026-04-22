@@ -56,9 +56,7 @@ class GetDatas:
         if os.path.exists(file_path):
             df_existant = pl.read_parquet(file_path)
             df_final = pl.concat([df_existant, self.df_flight_list], how="vertical")
-            temp_path = file_path + ".tmp"
-            df_final.write_parquet(temp_path)
-            os.replace(temp_path, file_path)
+            df_final.write_parquet(file_path)
             print(f"[INFO] Datas are added in the: {file_path} file !")
 
         else:
