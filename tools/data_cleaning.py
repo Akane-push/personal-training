@@ -5,6 +5,9 @@ pl.Config.set_tbl_cols(26)
 
 class DataCleaning():
     def __init__(self, df_flight : pl.DataFrame, df_weather : pl.DataFrame):
+        '''
+        Must include both flight and weather DataFrames (polars format)
+        '''
         df_flight = df_flight.unique()
         df_flight = df_flight.drop_nulls()
 
@@ -48,6 +51,7 @@ class DataCleaning():
         return df
     
 
+    #Maps weather codes to categorical labels to reduce cardinality and prevent numeric interpretation by the model
     def replacement_weather(self) :
         replacement_weather_dict = {"0": "clear",
                                     "1": "clear", "2": "clear",
