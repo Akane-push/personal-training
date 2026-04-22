@@ -10,7 +10,7 @@ deploy_to_test:
   script:
     - docker compose up -d --build --remove-orphans
   only:
-    - id_config
+    - test_server
 
 deploy_to_prod:
   stage: deploy-prod
