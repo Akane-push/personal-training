@@ -1,0 +1,23 @@
+stages:
+  - build
+  - deploy-test
+  - deploy-prod
+
+deploy_to_test:
+  stage: deploy-test
+  tags:
+    - runner-test
+  script:
+    - docker compose up -d --build --remove-orphans
+  only:
+    - id_config
+
+deploy_to_prod:
+  stage: deploy-prod
+  tags:
+    - runner-prod
+  script:
+    - docker compose up -d --build --remove-orphans
+  when: manual
+  only:
+    - main
