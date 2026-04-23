@@ -11,7 +11,6 @@ deploy_to_test:
       name: serveur-test
   script:
     - touch .env
-    - sudo chown -R 1000:1000 . 
     - docker compose down --remove-orphans
     - docker compose up -d --build
   only:
@@ -25,7 +24,6 @@ deploy_to_prod:
       name: serveur-prod
   script:
     - touch .env
-    - sudo chown -R 1000:1000 . 
     - docker compose down --remove-orphans
     - docker compose up -d --build
   when: manual
