@@ -1,20 +1,30 @@
+.init-deploy:
+  script:
+    - touch .env
+    - echo "Lufth_client_secret=$Lufth_client_secret" >> .env
+    - echo "Lufth_client_id=$Lufth_client_id" >> .env
+    - echo "Lufth_grant_type=$Lufth_grant_type" >> .env
+    - echo "EXTRACTED_PATH=$EXTRACTED_PATH" >> .env
+    - echo "ARCHIVES_PATH=$ARCHIVES_PATH" >> .env
+    - mkdir -p ./airflow/logs
+    - chmod -R 777 ./airflow/
+    - docker compose down --remove-orphans
+    - docker compose up -d --build
+
 stages:
   - build
   - deploy-test
   - deploy-prod
 
 deploy_to_test:
+  extends: .init-deploy
   stage: deploy-test
   tags:
     - runner-test
   environment:
       name: serveur-test
   script:
-    - touch .env
-    - mkdir -p ./airflow/logs
-    - chmod -R 777 ./airflow/
-    - docker compose down --remove-orphans
-    - docker compose up -d --build
+  - !reference [.init-deploy, script]
   only:
     - test_server
 
@@ -25,11 +35,7 @@ deploy_to_prod:
   environment:
       name: serveur-prod
   script:
-    - touch .env
-    - mkdir -p ./airflow/logs
-    - chmod -R 777 ./airflow/
-    - docker compose down --remove-orphans
-    - docker compose up -d --build
+    - !reference [.init-deploy, script]
   when: manual
   only:
     - main
