@@ -11,6 +11,7 @@ deploy_to_test:
       name: serveur-test
   script:
     - touch .env
+    - mkdir -p ./logs
     - docker compose down --remove-orphans
     - docker compose up -d --build
   only:
@@ -24,6 +25,7 @@ deploy_to_prod:
       name: serveur-prod
   script:
     - touch .env
+    - mkdir -p ./logs
     - docker compose down --remove-orphans
     - docker compose up -d --build
   when: manual
