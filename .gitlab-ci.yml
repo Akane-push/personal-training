@@ -12,6 +12,7 @@ deploy_to_test:
   script:
     - touch .env
     - mkdir -p ./airflow/logs
+    - chmod -R 777 ./airflow/
     - docker compose down --remove-orphans
     - docker compose up -d --build
   only:
@@ -26,6 +27,7 @@ deploy_to_prod:
   script:
     - touch .env
     - mkdir -p ./airflow/logs
+    - chmod -R 777 ./airflow/
     - docker compose down --remove-orphans
     - docker compose up -d --build
   when: manual
