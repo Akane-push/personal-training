@@ -10,6 +10,7 @@ deploy_to_test:
   environment:
       name: serveur-test
   script:
+    - touch .env
     - docker compose up -d --build --remove-orphans
   only:
     - test_server
@@ -21,6 +22,7 @@ deploy_to_prod:
   environment:
       name: serveur-prod
   script:
+    - touch .env
     - docker compose up -d --build --remove-orphans
   when: manual
   only:
