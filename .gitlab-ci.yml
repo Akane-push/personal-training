@@ -7,6 +7,8 @@ deploy_to_test:
   stage: deploy-test
   tags:
     - runner-test
+  environment:
+      name: serveur-test
   script:
     - docker compose up -d --build --remove-orphans
   only:
@@ -16,6 +18,8 @@ deploy_to_prod:
   stage: deploy-prod
   tags:
     - runner-prod
+  environment:
+      name: serveur-prod
   script:
     - docker compose up -d --build --remove-orphans
   when: manual
