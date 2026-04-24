@@ -17,7 +17,6 @@ stages:
   - deploy-prod
 
 deploy_to_test:
-  extends: .init-deploy
   stage: deploy-test
   tags:
     - runner-test
