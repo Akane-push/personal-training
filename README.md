@@ -54,6 +54,7 @@ AIRFLOW_LOGS_PATH=./airflow/logs
 AIRFLOW_UID=1000
 
 # --- Chemins de stockage ---
-EXTRACTED_PATH=/chemin/absolu/vers/votre/dossier/data/local
-ARCHIVES_PATH=/chemin/absolu/vers/votre/dossier/data/local
+EXTRACTED_PATH=./chemin_absolu_vers_votre_dossier/datas
+ARCHIVES_PATH=./chemin_absolu_vers_votre_dossier/archives
+MODEL_PATH=./chemin_absolu_vers_votre_dossier/model
 ```

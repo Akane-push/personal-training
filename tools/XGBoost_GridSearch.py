@@ -19,7 +19,7 @@ filename_flight = "_flightdatas.parquet"
 filename_weather = "_weatherdatas.parquet"
 
 datas_path = "/opt/airflow/output"
-save_dir = "/opt/airflow/output"
+save_dir = "/opt/airflow/output_model"
 
 class XGBGridSearch():
     def __init__(self):

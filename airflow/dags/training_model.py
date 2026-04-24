@@ -1,6 +1,7 @@
 import pendulum
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
 from XGBoost_GridSearch import XGBGridSearch
@@ -13,8 +14,9 @@ default_args = {
     'owner': 'dev_team',
     'depends_on_past': False,
     'retries': 3,
-    'retry_delay': timedelta(minutes=2),
+    'retry_delay': timedelta(minutes=19),
 }
+
 
 with DAG(
     dag_id='training_model',
@@ -26,8 +28,17 @@ with DAG(
     max_active_runs=1,
     tags=['model', 'training']
 ) as dag:
+    
     launch_training = PythonOperator(
         task_id="launch_training",
         python_callable=data_training,
         doc_md="""training the model""",
     )
+
+    archeving_files = BashOperator(
+        task_id="archeving_files",
+        bash_command="mv /opt/airflow/output/*.parquet /opt/airflow/archives",
+        doc_md="""Archeving old flight and weather files""",
+    )
+
+    launch_training >> archeving_files

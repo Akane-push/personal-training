@@ -6,8 +6,7 @@
     - echo "Lufth_grant_type=$Lufth_grant_type" >> .env
     - echo "EXTRACTED_PATH=$EXTRACTED_PATH" >> .env
     - echo "ARCHIVES_PATH=$ARCHIVES_PATH" >> .env
-    - mkdir -p ./airflow/logs
-    - chmod -R 777 ./airflow/
+    - echo "MODEL_PATH=$MODEL_PATH" >> .env
     - docker compose down --remove-orphans
     - docker compose up -d --build
 
