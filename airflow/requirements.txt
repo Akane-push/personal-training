@@ -1,7 +1,6 @@
 dotenv
 requests
 pandas
-polars-lts-cpu
 pyarrow
 datetime
 openmeteo-requests
