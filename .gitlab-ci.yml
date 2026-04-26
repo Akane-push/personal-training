@@ -15,6 +15,10 @@ stages:
   - deploy-test
   - deploy-prod
 
+before_script:
+  - find . -type d -name "__pycache__" -exec rm -rf {} +
+  - find . -type f -name "*.pyc" -delete
+
 deploy_to_test:
   stage: deploy-test
   tags:
