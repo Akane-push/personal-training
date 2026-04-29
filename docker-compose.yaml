@@ -13,9 +13,9 @@ x-airflow-common: &airflow-common
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ${AIRFLOW_LOGS_PATH}:/opt/airflow/logs
-    - ./extract_data:/opt/airflow/extract_data
-    - ./tools:/opt/airflow/tools
-    - ./reference_data:/opt/airflow/reference_data
+    - ./src/extract_data:/opt/airflow/extract_data
+    - ./src/tools:/opt/airflow/tools
+    - ./src/reference_data:/opt/airflow/reference_data
     - ${EXTRACTED_PATH}:/opt/airflow/output
     - ${PENDING_PATH}:/opt/airflow/pending
     - ${ARCHIVES_PATH}:/opt/airflow/archives
