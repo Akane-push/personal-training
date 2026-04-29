@@ -5,6 +5,7 @@
     - echo "Lufth_client_id=$Lufth_client_id" >> .env
     - echo "Lufth_grant_type=$Lufth_grant_type" >> .env
     - echo "EXTRACTED_PATH=$EXTRACTED_PATH" >> .env
+    - echo "PENDING_PATH=$PENDING_PATH" >> .env
     - echo "ARCHIVES_PATH=$ARCHIVES_PATH" >> .env
     - echo "MODEL_PATH=$MODEL_PATH" >> .env
     - docker compose down --remove-orphans

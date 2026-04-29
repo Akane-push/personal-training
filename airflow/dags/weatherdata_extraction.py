@@ -7,7 +7,7 @@ from get_datas import GetDatas
 
 
 def run_extraction(ds):
-    GetDatas(ds).get_weather()
+    GetDatas(ds).get_archive_weather()
 
 default_args = {
     'owner': 'dev_team',

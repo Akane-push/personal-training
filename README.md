@@ -55,6 +55,7 @@ AIRFLOW_UID=1000
 
 # --- Chemins de stockage ---
 EXTRACTED_PATH=./chemin_absolu_vers_votre_dossier/datas
+PENDING_PATH=./chemin_absolu_vers_votre_dossier/pending
 ARCHIVES_PATH=./chemin_absolu_vers_votre_dossier/archives
 MODEL_PATH=./chemin_absolu_vers_votre_dossier/model
 ```

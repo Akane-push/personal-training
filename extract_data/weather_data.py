@@ -20,26 +20,35 @@ retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
 class Weather:
-    def __init__(self, date: str):
-        """
-        date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
-        """
-        self.date = date
-        self.datas_path = self.service_check()
+    def __init__(self):
+        self.service_check()
+
+
 
     #Change the path depending on the services
     def service_check(self):
         service = os.getenv("SERVICE_NAME", "unknown")
 
         if service == "airflow":
-            return "/opt/airflow/output"
+            self.datas_path = "/opt/airflow/output"
+            self.pending_path = "/opt/airflow/pending"
         
         else:
-            return os.getenv("Datas_path")
+            self.datas_path = os.getenv("Datas_path")
+            self.pending_path = os.getenv("Pending_path")
+        
+        return
+
+
 
     #Load Datas from Open-Meteo API
-    def extract_weather(self):
-        if self.loading_datas() is None:
+    def extract_archive_weather(self, date: str):
+        """
+        date = 'AAAA-MM-DD'
+        """
+        self.date = date
+
+        if self.load_arch() is None:
             return None
 
         url = "https://archive-api.open-meteo.com/v1/archive"
@@ -54,24 +63,62 @@ class Weather:
         self.responses = openmeteo.weather_api(url, params = params)
         
         return self.openmeteo_extract()
+    
+    def extract_current_weather(self, PARAM: str, IATA: str):
+        '''
+        PARAM = "ARR" or "DEP"
+        IATA = "CDG" for exemple
+        '''
+        self.param = PARAM
+        self.iata = IATA
 
-    #Load flight data file and extract IATA list, longitude and latitude
+        if self.load_current() is None:
+            return None
+
+        url = "https://api.open-meteo.com/v1/forecast"
+        params = {
+            "latitude": self.df_IATA_l_L['Latitude'].to_list(),
+            "longitude": self.df_IATA_l_L['Longitude'].to_list(),
+            "hourly": ["temperature_2m", "wind_speed_100m", "wind_direction_100m", "surface_pressure", "weather_code", "precipitation", "wind_gusts_10m", "wind_direction_10m", "wind_speed_10m", "cloud_cover", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high"],
+            "timezone": "auto",
+            "forecast_days": 1,
+            "past_days": 1,
+        }
+        self.responses = openmeteo.weather_api(url, params = params)
+        
+        return self.openmeteo_extract()
+    
+
+
+    #Load flight data file
+    def load_arch(self):
+        self.file_name = self.date + filename_flight
+        self.file_path = os.path.join(self.datas_path, self.file_name)
+        return self.loading_datas()
+    
+    def load_current(self):
+        self.file_name = f"{self.param}_{self.iata}.parquet"
+        self.file_path = os.path.join(self.pending_path, self.file_name)
+        return self.loading_datas()
+
+
+
+    #Extract IATA list, longitude and latitude
     def loading_datas(self):
-        file_name = self.date + filename_flight
-        file_path = os.path.join(self.datas_path, file_name)
-
-        if os.path.exists(file_path):
-            self.df_flight_list = pl.read_parquet(file_path)
+        if os.path.exists(self.file_path):
+            self.df_flight_list = pl.read_parquet(self.file_path)
             df_IATA = pl.concat([self.df_flight_list['Departure_IATA'], self.df_flight_list['Arrival_IATA']])
             self.liste_IATA = df_IATA.unique().to_list()
         
         else:
-            print(f"[WARNING] No {file_name} file existing")
+            print(f"[WARNING] No {self.file_name} file existing")
             return None
 
         self.df_IATA_l_L = df_IATA_refs.filter(pl.col("Airport_IATA").is_in(self.liste_IATA))
         self.df_IATA_l_L = self.df_IATA_l_L.drop(self.df_IATA_l_L.columns[:3])
         return self.df_IATA_l_L
+
+
 
     #Transform Open-Meteo data into a data frame
     def openmeteo_extract(self):
@@ -111,5 +158,7 @@ class Weather:
             self.hourly_df = pl.concat([self.hourly_df, hourly_data])
         return self.hourly_df
 
+
+
 if __name__ == "__main__":
-    print(Weather("2026-03-30").get_weather().head())
+    print(Weather("2026-03-30").extract_current_weather().head())

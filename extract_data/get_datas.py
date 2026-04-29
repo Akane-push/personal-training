@@ -64,8 +64,8 @@ class GetDatas:
             print(f"[INFO] Datas are available in the: {file_path} file !")
 
     #Generate the files for weather
-    def get_weather(self):
-        self.df_weather = self.Weather(self.date).extract_weather()
+    def get_archive_weather(self):
+        self.df_weather = self.Weather().extract_archive_weather(self.date)
         if self.df_weather is None:
             print("[WARNING] Can't generate weather file")
             return

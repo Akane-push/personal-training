@@ -17,6 +17,7 @@ x-airflow-common: &airflow-common
     - ./tools:/opt/airflow/tools
     - ./reference_data:/opt/airflow/reference_data
     - ${EXTRACTED_PATH}:/opt/airflow/output
+    - ${PENDING_PATH}:/opt/airflow/pending
     - ${ARCHIVES_PATH}:/opt/airflow/archives
     - ${MODEL_PATH}:/opt/airflow/output_model
   user: "${AIRFLOW_UID:-50000}:0"
