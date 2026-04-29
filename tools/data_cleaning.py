@@ -1,4 +1,5 @@
 import polars as pl
+import polars.selectors as cs
 from joblib import load
 
 pl.Config.set_tbl_cols(26)
@@ -51,7 +52,6 @@ class DataCleaning():
         return df
     
 
-    #Maps weather codes to categorical labels to reduce cardinality and prevent numeric interpretation by the model
     def replacement_weather(self) :
         replacement_weather_dict = {"0": "clear",
                                     "1": "clear", "2": "clear",
@@ -72,6 +72,22 @@ class DataCleaning():
         self.df_final = self.df_final.with_columns([pl.col("Weather_Code").cast(pl.String).replace(replacement_weather_dict).alias("Weather_Description"),
                                                     pl.col("Weather_Code_Arr").cast(pl.String).replace(replacement_weather_dict).alias("Weather_Description_Arr")])
 
+
+    def encoding(self) :
+        ordinal_encoder = load('../Machine_Learning/oe.joblib') #Ajouter gestion chemin en fonction du service
+        ordinal_encoder.set_output(transform="polars")
+
+        numerical_cols = self.df_final.select(cs.numeric()).columns
+        categorical_cols = self.df_final.select(cs.string()).columns
+
+        df_cat_encoded = ordinal_encoder.transform(self.df_final.select(categorical_cols))
+        
+        self.encoded_df = pl.concat([self.df_final.select(numerical_cols), df_cat_encoded], how="horizontal").select(sorted(self.df_final.columns))
+        
+
+    def get_encoded(self) :
+        self.encoding()
+        return self.encoded_df
     
     def get_dataframe(self) :
         return self.df_final
