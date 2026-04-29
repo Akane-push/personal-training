@@ -3,8 +3,6 @@ import polars.selectors as cs
 
 from joblib import dump
 
-from pathlib import Path
-import sys
 import os
 from data_cleaning import DataCleaning as cl
 
@@ -43,20 +41,18 @@ class XGBGridSearch():
         numerical_cols = df.select(cs.numeric()).columns
         categorical_cols = df.select(cs.string()).columns
 
-        train_numerical = df[numerical_cols]
-        train_categorical = df[categorical_cols]
+        imputer_numerical = SimpleImputer(strategy='median').set_output(transform="polars")
+        imputer_categorical = SimpleImputer(strategy='most_frequent').set_output(transform="polars")
+        self.oe = OrdinalEncoder().set_output(transform="polars")
 
-        imputer_median = SimpleImputer(strategy='median')
-        imputer_most_frequent = SimpleImputer(strategy='most_frequent')
+        train_numerical = imputer_numerical.fit_transform(df.select(numerical_cols))
 
-        train_numerical[train_numerical.columns] = imputer_median.fit_transform(train_numerical)
-        train_categorical[train_categorical.columns] = imputer_most_frequent.fit_transform(train_categorical)
+        train_categorical = df.select(sorted(categorical_cols))
+        train_categorical = imputer_categorical.fit_transform(train_categorical)
+        train_categorical = self.oe.fit_transform(train_categorical)
 
-        train_categorical = train_categorical[sorted(train_categorical.columns)]
-        train_categorical[train_categorical.columns] = self.oe.fit_transform(train_categorical)
-
-        df = pl.concat([train_numerical, train_categorical],  how="horizontal")
-        df = df[sorted(df.columns)]
+        df = pl.concat([train_numerical, train_categorical], how="horizontal")
+        df.select(sorted(df.columns))
         return df
 
     #Testing parameters using GridSearch
