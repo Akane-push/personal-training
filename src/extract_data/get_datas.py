@@ -1,10 +1,6 @@
 import sys
 import os
 from datetime import datetime
-import polars as pl
-from dotenv import load_dotenv
-
-load_dotenv()
 
 filename_flight = "_flightdatas.parquet"
 filename_weather = "_weatherdatas.parquet"
@@ -14,11 +10,15 @@ class GetDatas:
         """
         date = 'AAAA-MM-DD'
         """
+        import polars as pl
+        self.pl = pl
         self.date = date
         self.datas_path = self.service_check()
 
     #Change the path depending on the services
     def service_check(self):
+        from dotenv import load_dotenv
+        load_dotenv()
         service = os.getenv("SERVICE_NAME", "unknown")
 
         if service == "airflow":
@@ -54,8 +54,8 @@ class GetDatas:
         file_path = os.path.join(self.datas_path, name_data_file)
 
         if os.path.exists(file_path):
-            df_existant = pl.read_parquet(file_path)
-            df_final = pl.concat([df_existant, self.df_flight_list], how="vertical")
+            df_existant = self.pl.read_parquet(file_path)
+            df_final = self.pl.concat([df_existant, self.df_flight_list], how="vertical")
             df_final.write_parquet(file_path)
             print(f"[INFO] Datas are added in the: {file_path} file !")
 

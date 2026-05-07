@@ -1,32 +1,32 @@
 import pendulum
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from airflow.utils.dates import days_ago
+from airflow.sdk import dag, task
 from datetime import datetime, timedelta
 from get_datas import GetDatas
 
-def run_extraction():
-    GetDatas(datetime.now().strftime("%Y-%m-%d")).get_flights(datetime.now().strftime("%H:00"))
-
-default_args = {
-    'owner': 'dev_team',
-    'depends_on_past': False,
-    'retries': 3,
-    'retry_delay': timedelta(minutes=5),
-}
-
-with DAG(
+@dag(
     dag_id='run_flight_extraction',
-    default_args=default_args,
-    description='A simple ETL pipeline',
+    description='A simple Extract pipeline',
     schedule='0 */3 * * *',
     start_date=pendulum.datetime(2026, 4, 12, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
-    tags=['elt', 'extract']
-) as dag:
-    extraction_flight = PythonOperator(
-        task_id="extract_flight",
-        python_callable=run_extraction,
-        doc_md="""Extract flight eatch 3 hours""",
-    )
+    default_args={
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    },
+    tags=['elt', 'extract'],
+    doc_md="""
+    Extract flight eatch 3 hours
+    """
+)
+
+def extractor():
+    
+    @task(task_id="extract_flight")
+    def run_extraction():
+        extractor = GetDatas(datetime.now().strftime("%Y-%m-%d")).get_flights(datetime.now().strftime("%H:00"))
+        return extractor
+
+    run_extraction()
+
+extractor()

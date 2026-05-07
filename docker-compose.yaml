@@ -3,31 +3,37 @@ x-airflow-common: &airflow-common
     context: .
     dockerfile: ./airflow/Dockerfile
   environment:
+    - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+    - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/airflow
-    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-    - PYTHONPATH=/opt/airflow/reference_data:/opt/airflow/tools:/opt/airflow/extract_data
+    - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/airflow
+    - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+    - AIRFLOW__CORE__EXECUTION_API_SERVER_URL=http://airflow-api-server:8080/execution/
+    #- AIRFLOW__CORE__INTERNAL_API_URL=http://airflow-api-server:8080/internal-api/v2
+    - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.session
+    - AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_API_SECRET}
+    - AIRFLOW__API_AUTH__JWT_ISSUER=${AIRFLOW_API_ISSUER}
+    - PYTHONPATH=/opt/airflow/dags:/opt/airflow/reference_data:/opt/airflow/tools:/opt/airflow/extract_data
     - SERVICE_NAME=airflow
     - TZ=Europe/Paris
   env_file:
     - .env
   volumes:
     - ./airflow/dags:/opt/airflow/dags
-    - ${AIRFLOW_LOGS_PATH}:/opt/airflow/logs
     - ./src/extract_data:/opt/airflow/extract_data
     - ./src/tools:/opt/airflow/tools
     - ./src/reference_data:/opt/airflow/reference_data
+    - ${AIRFLOW_LOGS_PATH}:/opt/airflow/logs
     - ${EXTRACTED_PATH}:/opt/airflow/output
     - ${PENDING_PATH}:/opt/airflow/pending
     - ${ARCHIVES_PATH}:/opt/airflow/archives
     - ${MODEL_PATH}:/opt/airflow/output_model
   user: "${AIRFLOW_UID:-50000}:0"
-  depends_on:
-    postgres:
-      condition: service_healthy
+
 
 services:
   postgres:
-    image: postgres:13
+    image: postgres:16
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -39,35 +45,97 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  redis:
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  
 
-  airflow-webserver:
+  airflow-init:
     <<: *airflow-common
-    command: webserver
+    command: >
+        bash -c "airflow db migrate &&
+        airflow users create
+        --username $${AIRFLOW_USER:-admin}
+        --firstname admin
+        --lastname admin
+        --role Admin
+        --email admin@example.com
+        --password $${AIRFLOW_PASSWORD:-admin}"
+    depends_on:
+      postgres:
+          condition: service_healthy
+
+  airflow-api-server:
+    <<: *airflow-common
+    command: api-server
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/api/v2/monitor/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       postgres:
           condition: service_healthy
       airflow-init:
           condition: service_completed_successfully
-    ports:
-      - "8080:8080"
-  
-  airflow-init:
-    <<: *airflow-common
-    build: 
-      context: .
-      dockerfile: ./airflow/Dockerfile
-    command: >
-      bash -c "airflow db migrate &&
-      airflow users create
-      --username ${AIRFLOW_USER}
-      --firstname admin
-      --lastname admin
-      --role Admin
-      --email admin@example.com
-      --password ${AIRFLOW_PASSWORD} || true"
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      postgres:
+          condition: service_healthy
+      airflow-init:
+          condition: service_completed_successfully
+      airflow-api-server:
+          condition: service_started
 
-  
+  airflow-worker:
+    <<: *airflow-common
+    command: celery worker
+    depends_on:
+      redis:
+          condition: service_healthy
+      postgres:
+          condition: service_healthy
+      airflow-init:
+          condition: service_completed_successfully
+      airflow-api-server:
+          condition: service_started
+
+  airflow-dag-processor:
+      <<: *airflow-common
+      command: dag-processor
+      depends_on:
+        postgres:
+            condition: service_healthy
+        airflow-init:
+            condition: service_completed_successfully
+        airflow-api-server:
+            condition: service_started
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    depends_on:
+      postgres:
+          condition: service_healthy
+      airflow-init:
+          condition: service_completed_successfully
+      airflow-api-server:
+          condition: service_started

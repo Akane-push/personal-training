@@ -21,13 +21,23 @@ Le système intègrera un pipeline ELT orchestré par Airflow, un stockage au fo
 
 ## Avancement
 
+### Phase 1:
 - [x] Récupération des données vols (Lufthansa) et météo (Open-Meteo)
-- [x] Stockage
-- [x] Airflow
+- [x] Stockage des données
+- [x] Orchestration (Airflow)
 - [x] Nettoyage des données pour le modèle
-- [x] Modèle entraîné avec scikit-learn
-- [ ] Mettre en place un pipeline CI/CD
-- [ ] FastAPI
+- [x] Entraînement du modèle avec scikit-learn
+
+### Phase 2:
+- [ ] FastAPI - Core (API Prod)
+- [ ] FastAPI - Prédiction (API Predict)
+- [ ] FastAPI - Démo (API Demo)
+
+### Phase 3:
+- [ ] Pipeline CI
+- [ ] Kubernetes
+- [ ] Monitoring (Prometheus + Grafana)
+- [ ] Pipeline CD
 
 ---
 
@@ -51,6 +61,8 @@ POSTGRES_PASSWORD=votre_mot_de_passe_fort
 AIRFLOW_USER=votre_user
 AIRFLOW_PASSWORD=votre_mot_de_passe_fort
 AIRFLOW_LOGS_PATH=./airflow/logs
+AIRFLOW_API_ISSUER=votre_issuer
+AIRFLOW_API_SECRET=votre_secret_fort
 AIRFLOW_UID=1000
 
 # --- Chemins de stockage ---

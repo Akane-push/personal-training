@@ -1,5 +1,5 @@
-dotenv
-requests
+python-dotenv
+requests==2.31.0
 pandas
 pyarrow
 datetime
@@ -9,3 +9,5 @@ retry-requests
 joblib
 scikit-learn
 xgboost
+git+https://github.com/phi-friday/airflow-serde-polars.git
+urllib3<2.0.0
