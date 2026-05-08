@@ -3,16 +3,17 @@ import os
 import time
 import requests
 import polars as pl
+from src.tools.identification import LufthansaAPI
 
 wanted_items = 20000 # nb airports to fetch (default 10500 for all)
-pd.set_option('display.max_rows', wanted_items)
-pd.set_option('display.max_columns', 10)
-pd.set_option('display.max_colwidth', None)
+#pd.set_option('display.max_rows', wanted_items)
+#pd.set_option('display.max_columns', 10)
+#pd.set_option('display.max_colwidth', None)
 
 class LufthansaRefs:
     def __init__(self):
         self.datas_ref_path = self.service_check()
-        self.api = self.LufthansaAPI()
+        self.api = LufthansaAPI()
         if self.api.token is None:
             self.token = self.api.get_token()
         else:
@@ -24,15 +25,9 @@ class LufthansaRefs:
         service = os.getenv("SERVICE_NAME", "unknown")
 
         if service == "airflow":
-            from identification import LufthansaAPI
-            self.LufthansaAPI = LufthansaAPI
             return "/opt/airflow/reference_data"
 
         else:
-            current_folder = os.path.dirname(__file__)
-            sys.path.append(os.path.join(current_folder, "..", "tools"))
-            from identification import LufthansaAPI
-            self.LufthansaAPI = LufthansaAPI
             return os.getenv("Datas_ref_path")
 
     # Airport import

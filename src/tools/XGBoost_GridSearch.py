@@ -1,5 +1,5 @@
 import os
-from data_cleaning import DataCleaning as cl
+from src.tools.data_cleaning import DataCleaning as cl
 #from sklearn.metrics import classification_report
 
 filename_flight = "_flightdatas.parquet"

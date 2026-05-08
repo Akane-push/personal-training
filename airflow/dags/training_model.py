@@ -2,13 +2,13 @@ import pendulum
 from airflow.sdk import dag, task
 from airflow.providers.standard.operators.bash import BashOperator
 from datetime import datetime, timedelta
-from XGBoost_GridSearch import XGBGridSearch
+from src.tools.XGBoost_GridSearch import XGBGridSearch
 
 @dag(
     dag_id='training_model',
     description='Launch training model',
     schedule="0 2 * * 0", 
-    start_date=pendulum.datetime(2024, 4, 20, tz=pendulum.timezone("Europe/Paris")),
+    start_date=pendulum.datetime(2024, 5, 10, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
     default_args={

@@ -1,6 +1,8 @@
 import sys
 import os
 from datetime import datetime
+from src.extract_data.flight_data import LufthansaFly
+from src.extract_data.weather_data import Weather
 
 filename_flight = "_flightdatas.parquet"
 filename_weather = "_weatherdatas.parquet"
@@ -22,19 +24,10 @@ class GetDatas:
         service = os.getenv("SERVICE_NAME", "unknown")
 
         if service == "airflow":
-            from flight_data import LufthansaFly
-            from weather_data import Weather
-            self.LufthansaFly = LufthansaFly
-            self.Weather = Weather
             return "/opt/airflow/output"
         
         else:
             #Loading required files
-            current_folder = os.path.dirname(__file__)
-            from flight_data import LufthansaFly
-            from weather_data import Weather
-            self.LufthansaFly = LufthansaFly
-            self.Weather = Weather
             return os.getenv("Datas_path")
 
 
@@ -44,7 +37,7 @@ class GetDatas:
         time = 'HH:MM'
         """
         date_time = self.date + "T" + time
-        self.df_flight_list = self.LufthansaFly(date_time).extract_flights()
+        self.df_flight_list = LufthansaFly(date_time).extract_flights()
 
         if self.df_flight_list.is_empty():
             print("[INFO] No available datas")
@@ -65,7 +58,7 @@ class GetDatas:
 
     #Generate the files for weather
     def get_archive_weather(self):
-        self.df_weather = self.Weather().extract_archive_weather(self.date)
+        self.df_weather = Weather().extract_archive_weather(self.date)
         if self.df_weather is None:
             print("[WARNING] Can't generate weather file")
             return
@@ -79,4 +72,4 @@ class GetDatas:
 
 if __name__ == "__main__":
     GetDatas("2026-04-04").get_flights("15:00")
-    GetDatas("2026-04-04").get_weather()
+    GetDatas("2026-04-04").get_archive_weather()

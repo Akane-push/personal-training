@@ -1,13 +1,13 @@
 import pendulum
 from airflow.sdk import dag, task
 from datetime import datetime, timedelta
-from get_datas import GetDatas
+from src.extract_data.get_datas import GetDatas
 
 @dag(
     dag_id='run_flight_extraction',
     description='A simple Extract pipeline',
     schedule='0 */3 * * *',
-    start_date=pendulum.datetime(2026, 4, 12, tz=pendulum.timezone("Europe/Paris")),
+    start_date=pendulum.datetime(2026, 5, 8, tz=pendulum.timezone("Europe/Paris")),
     catchup=False,
     max_active_runs=1,
     default_args={
