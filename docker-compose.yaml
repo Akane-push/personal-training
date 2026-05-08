@@ -13,16 +13,14 @@ x-airflow-common: &airflow-common
     - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.session
     - AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_API_SECRET}
     - AIRFLOW__API_AUTH__JWT_ISSUER=${AIRFLOW_API_ISSUER}
-    - PYTHONPATH=/opt/airflow/dags:/opt/airflow/reference_data:/opt/airflow/tools:/opt/airflow/extract_data
+    - PYTHONPATH=/opt/airflow/
     - SERVICE_NAME=airflow
     - TZ=Europe/Paris
   env_file:
     - .env
   volumes:
     - ./airflow/dags:/opt/airflow/dags
-    - ./src/extract_data:/opt/airflow/extract_data
-    - ./src/tools:/opt/airflow/tools
-    - ./src/reference_data:/opt/airflow/reference_data
+    - ./src:/opt/airflow/src
     - ${AIRFLOW_LOGS_PATH}:/opt/airflow/logs
     - ${EXTRACTED_PATH}:/opt/airflow/output
     - ${PENDING_PATH}:/opt/airflow/pending

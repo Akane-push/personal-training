@@ -1,17 +1,6 @@
-import polars as pl
-import polars.selectors as cs
-
-from joblib import dump
-
 import os
-from data_cleaning import DataCleaning as cl
-
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
+from src.tools.data_cleaning import DataCleaning as cl
 #from sklearn.metrics import classification_report
-from xgboost import XGBClassifier
 
 filename_flight = "_flightdatas.parquet"
 filename_weather = "_weatherdatas.parquet"
@@ -21,8 +10,13 @@ save_dir = "/opt/airflow/output_model"
 
 class XGBGridSearch():
     def __init__(self):
-        df_flights = pl.read_parquet(f"{datas_path}/*{filename_flight}")
-        df_weather = pl.read_parquet(f"{datas_path}/*{filename_weather}")
+        import polars as pl
+        from sklearn.model_selection import train_test_split
+        from sklearn.preprocessing import OrdinalEncoder
+        self.pl = pl
+
+        df_flights = self.pl.read_parquet(f"{datas_path}/*{filename_flight}")
+        df_weather = self.pl.read_parquet(f"{datas_path}/*{filename_weather}")
     
         df_clean = cl(df_flights, df_weather).get_dataframe()
 
@@ -30,7 +24,7 @@ class XGBGridSearch():
         target = df_clean["Delay"]
         self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(feats, target, test_size = 0.2, random_state = 42)
 
-        self.oe = OrdinalEncoder(handle_unknown = 'use_encoded_value', unknown_value = -1)
+        self.oe = OrdinalEncoder(handle_unknown = 'use_encoded_value', unknown_value = -1).set_output(transform="polars")
 
         self.x_train = self.encoding(self.x_train)
         self.x_test = self.encoding(self.x_test)
@@ -38,12 +32,13 @@ class XGBGridSearch():
 
     #Converts columns to match the model
     def encoding(self, df):
+        import polars.selectors as cs
+        from sklearn.impute import SimpleImputer
         numerical_cols = df.select(cs.numeric()).columns
         categorical_cols = df.select(cs.string()).columns
 
         imputer_numerical = SimpleImputer(strategy='median').set_output(transform="polars")
         imputer_categorical = SimpleImputer(strategy='most_frequent').set_output(transform="polars")
-        self.oe = OrdinalEncoder().set_output(transform="polars")
 
         train_numerical = imputer_numerical.fit_transform(df.select(numerical_cols))
 
@@ -51,12 +46,14 @@ class XGBGridSearch():
         train_categorical = imputer_categorical.fit_transform(train_categorical)
         train_categorical = self.oe.fit_transform(train_categorical)
 
-        df = pl.concat([train_numerical, train_categorical], how="horizontal")
+        df = self.pl.concat([train_numerical, train_categorical], how="horizontal")
         df.select(sorted(df.columns))
         return df
 
     #Testing parameters using GridSearch
     def found_parameters(self):
+        from xgboost import XGBClassifier
+        from sklearn.model_selection import GridSearchCV
         model = XGBClassifier(objective='binary:logistic', eval_metric='auc')
 
         param_grid = {'max_depth': [3, 4, 6],
@@ -78,6 +75,8 @@ class XGBGridSearch():
 
     #Encodes the model with the selected parameters
     def training_model(self):
+        from joblib import dump
+        from xgboost import XGBClassifier
         params = {'objective': 'binary:logistic',
                     'eval_metric': 'auc',
                     'max_depth': 3,

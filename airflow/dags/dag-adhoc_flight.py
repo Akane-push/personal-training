@@ -1,6 +1,6 @@
 from airflow.sdk import dag, task
 from datetime import datetime, timedelta
-from get_datas import GetDatas
+from src.extract_data.get_datas import GetDatas
 
 @dag(
     dag_id='ad_hoc_flight',
@@ -22,7 +22,7 @@ def Ad_Hoc():
     
     @task
     def extract_task():
-        extractor = GetDatas("2026-04-30").get_flights("15:00")
+        extractor = GetDatas("2026-05-05").get_flights("15:00")
         return extractor
 
     extract_task()

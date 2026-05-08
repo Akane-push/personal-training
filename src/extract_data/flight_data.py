@@ -4,6 +4,7 @@ import time
 import requests
 import polars as pl
 import json
+from src.tools.identification import LufthansaAPI
 
 #Loading required files
 current_folder = os.path.dirname(__file__)
@@ -21,27 +22,24 @@ class LufthansaFly:
         date = 'AAAA-MM-DDTHH:MM' (Convert to ISO 8601 format with 'T' separator)
         """
         self.date = date
-        self.service_check()
+        #self.service_check()
 
-        self.api = self.LufthansaAPI()
+        self.api = LufthansaAPI()
         if self.api.token is None:
             self.token = self.api.get_token()
         else:
             self.token = self.api.token
         self.headers = {'Authorization': f'Bearer {self.token}'}
 
-    #Change the path depending on the services
+    '''#Change the path depending on the services
     def service_check(self):
         service = os.getenv("SERVICE_NAME", "unknown")
 
         if service == "airflow":
-            from identification import LufthansaAPI
-            self.LufthansaAPI = LufthansaAPI
+            return
 
         else:
-            sys.path.append(os.path.join(current_folder, "..", "tools"))
-            from identification import LufthansaAPI
-            self.LufthansaAPI = LufthansaAPI
+            return'''
 
     #Get landed flights informations
     def extract_flights(self):
@@ -60,7 +58,7 @@ class LufthansaFly:
             time.sleep(5)
 
         if collected_dfs:
-            df_flight_list = pl.concat(collected_dfs)
+            df_flight_list = pl.concat(collected_dfs, how="vertical")
         else:
             df_flight_list = pl.DataFrame()
 
