@@ -1,6 +1,6 @@
 .init-deploy:
   script:
-    - cp $PROD_ENV_FILE .env
+    - cp $ENV_FILE .env
     - echo "Lufth_client_secret=$Lufth_client_secret" >> .env
     - echo "Lufth_client_id=$Lufth_client_id" >> .env
     - echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
