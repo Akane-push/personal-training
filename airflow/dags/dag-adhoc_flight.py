@@ -16,6 +16,7 @@ from src.extract_data.get_datas import GetDatas
     tags=['test', 'extract'],
     doc_md="""
     Extract flight one time, change date before in script
+    Use api-prod to run this dag
     """
 )
 
